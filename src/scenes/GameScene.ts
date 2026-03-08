@@ -63,15 +63,14 @@ export class GameScene extends Phaser.Scene {
   private failReason: string = '';
 
   constructor() {
-    super({ 
-      key: 'GameScene',
-      physics: {
-        default: 'matter',
-        matter: {
-          gravity: { y: 1 },
-        }
-      }
-    });
+    super({ key: 'GameScene' });
+  }
+
+  init(): void {
+    // 确保 Matter.js 物理引擎初始化
+    if (!this.matter) {
+      console.error('❌ Matter.js 未初始化，检查游戏配置');
+    }
   }
 
   init(data: { level: number }): void {
@@ -91,9 +90,15 @@ export class GameScene extends Phaser.Scene {
     this.vfxManager = new VfxManager(this);
     this.tutorialManager = new TutorialManager(this);
     
-    // 设置 Matter.js 配置
-    this.matter.world.setBounds(0, 0, width, height);
-    this.matter.setGravity(0, 1);
+    // 设置 Matter.js 配置 - 使用正确的 API
+    const matterWorld = (this.physics as any).matter?.world;
+    if (matterWorld) {
+      matterWorld.setBounds(0, 0, width, height);
+      (this.physics as any).matter.setGravity(0, 1);
+      console.log('✅ Matter.js 初始化成功');
+    } else {
+      console.error('❌ Matter.js 未启用，检查游戏配置');
+    }
 
     // 加载关卡
     const levelData = this.loadLevel(this.level);
