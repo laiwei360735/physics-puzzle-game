@@ -47,21 +47,54 @@ let game: Phaser.Game | null = null;
 
 /**
  * 初始化游戏
+ * 已修复 P0: 添加错误处理和超时保护
  */
 async function initGame(): Promise<void> {
+  const startTime = Date.now();
+  
   try {
-    // 初始化微信适配
-    await wxAdapter.init();
+    console.log('🎮 游戏开始初始化...');
+    
+    // 初始化微信适配（带超时）
+    console.log('📱 初始化微信适配器...');
+    await Promise.race([
+      wxAdapter.init(),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('微信适配超时')), 3000)
+      )
+    ]);
+    console.log('✅ 微信适配器初始化完成');
 
     // 创建游戏实例
+    console.log('🎲 创建游戏实例...');
     game = new Phaser.Game(config);
-
-    console.log('游戏初始化成功');
+    
+    // 监听游戏创建完成
+    game.events.once('ready', () => {
+      const loadTime = Date.now() - startTime;
+      console.log(`✅ 游戏初始化成功，耗时：${loadTime}ms`);
+    });
 
     // 监听窗口大小变化
     window.addEventListener('resize', handleResize);
+    
+    console.log('✅ 游戏初始化完成');
   } catch (error) {
-    console.error('游戏初始化失败:', error);
+    console.error('❌ 游戏初始化失败:', error);
+    
+    // 隐藏加载界面，避免永久卡住
+    const loadingEl = document.getElementById('loading');
+    if (loadingEl) {
+      loadingEl.classList.add('hidden');
+    }
+    
+    // 尝试创建游戏（降级模式）
+    try {
+      game = new Phaser.Game(config);
+      console.log('✅ 游戏已降级模式启动');
+    } catch (fallbackError) {
+      console.error('❌ 降级模式也失败:', fallbackError);
+    }
   }
 }
 

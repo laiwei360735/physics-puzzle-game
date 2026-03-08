@@ -27,33 +27,72 @@ export class WxAdapter {
 
   /**
    * 初始化微信环境
+   * 已修复 P0: 添加超时保护和错误处理
    */
   async init(): Promise<void> {
-    if (this.isWeChat()) {
-      try {
-        this.systemInfo = wx.getSystemInfoSync();
-        console.log('微信环境初始化成功', this.systemInfo);
-        
-        // 获取 Canvas 上下文
-        this.canvas = wx.createCanvas ? wx.createCanvas() : null;
-        
-        // 适配屏幕
-        this.adaptScreen();
-        
-        // 初始化音频
-        this.initAudio();
-        
-        // 监听屏幕旋转
-        this.listenToScreenResize();
-        
+    // 超时保护（5 秒）
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => {
+        reject(new Error('微信初始化超时（5 秒）'));
+      }, 5000);
+    });
+
+    const initPromise = (async () => {
+      if (this.isWeChat()) {
+        try {
+          console.log('🔍 检测微信环境...');
+          
+          // 检查 wx 对象是否存在
+          if (typeof wx === 'undefined') {
+            throw new Error('wx 对象未定义');
+          }
+          
+          // 获取系统信息
+          if (typeof wx.getSystemInfoSync === 'function') {
+            this.systemInfo = wx.getSystemInfoSync();
+            console.log('✅ 微信环境初始化成功', this.systemInfo);
+          } else {
+            console.warn('⚠️ wx.getSystemInfoSync 不存在，使用默认配置');
+            this.systemInfo = {
+              windowWidth: 750,
+              windowHeight: 1334,
+              pixelRatio: 2,
+            };
+          }
+          
+          // 获取 Canvas 上下文
+          this.canvas = wx.createCanvas ? wx.createCanvas() : null;
+          
+          // 适配屏幕
+          this.adaptScreen();
+          
+          // 初始化音频
+          this.initAudio();
+          
+          // 监听屏幕旋转
+          this.listenToScreenResize();
+          
+          this.isInitialized = true;
+          console.log('✅ 微信适配器初始化完成');
+        } catch (error) {
+          console.error('❌ 微信环境初始化失败:', error);
+          // 不抛出错误，降级到浏览器模式
+          console.warn('⚠️ 降级到浏览器模式');
+          this.isInitialized = true;
+        }
+      } else {
+        // 非微信环境（浏览器开发模式）
+        console.log('🌐 非微信环境，使用浏览器模式');
         this.isInitialized = true;
-      } catch (error) {
-        console.error('微信环境初始化失败:', error);
-        throw error;
       }
-    } else {
-      // 非微信环境（浏览器开发模式）
-      console.log('非微信环境，使用浏览器模式');
+    })();
+
+    // 竞赛模式：哪个先完成就用哪个
+    try {
+      await Promise.race([initPromise, timeoutPromise]);
+    } catch (error) {
+      console.error('❌ 初始化超时或失败:', error);
+      // 降级到浏览器模式
       this.isInitialized = true;
     }
   }
