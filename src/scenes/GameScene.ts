@@ -63,15 +63,7 @@ export class GameScene extends Phaser.Scene {
   private failReason: string = '';
 
   constructor() {
-    super({
-      key: 'GameScene',
-      physics: {
-        default: 'matter' as const,
-        matter: {
-          gravity: { y: 1 },
-        }
-      }
-    });
+    super({ key: 'GameScene' });
   }
 
   init(data: { level: number }): void {
