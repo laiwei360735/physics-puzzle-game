@@ -16,6 +16,7 @@ import { InputManager } from '../systems/InputManager';
 import { CollisionSystem } from '../systems/CollisionSystem';
 import { LevelManager, LevelData } from '../systems/LevelManager';
 import { GameStateManager, GameState } from '../systems/GameStateManager';
+import { VfxManager } from '../systems/VfxManager';
 
 export class GameScene extends Phaser.Scene {
   private level!: number;
@@ -27,6 +28,7 @@ export class GameScene extends Phaser.Scene {
   private collisionSystem!: CollisionSystem;
   private levelManager!: LevelManager;
   private gameStateManager!: GameStateManager;
+  private vfxManager!: VfxManager;
 
   // 游戏对象
   private player!: Player | null;
@@ -56,6 +58,7 @@ export class GameScene extends Phaser.Scene {
     this.gameStateManager = new GameStateManager();
     this.inputManager = new InputManager(this);
     this.collisionSystem = new CollisionSystem(this);
+    this.vfxManager = new VfxManager(this);
 
     // 设置 Matter.js 配置 - 只使用 setBounds，不重复创建墙壁
     this.matter.world.setBounds(0, 0, width, height);
@@ -186,6 +189,9 @@ export class GameScene extends Phaser.Scene {
         }
       );
 
+      // 开始拖拽轨迹特效
+      this.vfxManager.startDragTrail();
+
       console.log('👆 开始拖拽玩家');
     }
   }
@@ -203,6 +209,9 @@ export class GameScene extends Phaser.Scene {
       this.dragConstraint.bodyB.x = worldPoint.x;
       this.dragConstraint.bodyB.y = worldPoint.y;
     }
+
+    // 更新拖拽轨迹特效
+    this.vfxManager.updateDragTrail(worldPoint.x, worldPoint.y);
   }
 
   /**
@@ -216,6 +225,9 @@ export class GameScene extends Phaser.Scene {
       this.matter.world.removeConstraint(this.dragConstraint);
       this.dragConstraint = null;
     }
+
+    // 结束拖拽轨迹特效（渐隐）
+    this.vfxManager.endDragTrail();
 
     this.isDragging = false;
     this.dragObject = null;
@@ -251,6 +263,19 @@ export class GameScene extends Phaser.Scene {
             this.handlePlayerReachGoal(goal);
           }
         });
+
+        // 检查玩家是否碰到障碍物
+        this.obstacles.forEach(obs => {
+          if (!this.player?.body) return;
+
+          if ((bodyA === this.player.body && bodyB === obs.body) ||
+              (bodyB === this.player.body && bodyA === obs.body)) {
+            // 获取碰撞点
+            const collisionPoint = bodyA.position;
+            // 播放碰撞粒子特效
+            this.vfxManager.onPlayerCollision(collisionPoint.x, collisionPoint.y);
+          }
+        });
       });
     });
   }
@@ -263,9 +288,12 @@ export class GameScene extends Phaser.Scene {
 
     console.log('🎯 玩家到达目标！');
 
+    // 播放成功特效（星星闪烁 + 彩带粒子）
+    this.vfxManager.playSuccessEffect(goal.x, goal.y);
+
     // 播放成功效果
     this.tweens.add({
-      targets: goal.sprite,
+      targets: goal,
       scale: 1.5,
       alpha: 0,
       duration: 500,
@@ -316,6 +344,14 @@ export class GameScene extends Phaser.Scene {
 
     console.log(`❌ 关卡 ${this.level} 失败`);
 
+    // 播放失败特效（灰色滤镜 + 下沉动画）
+    if (this.player) {
+      // Player 是 Container，使用自身作为目标
+      this.vfxManager.playFailEffect(this.player);
+    } else {
+      this.vfxManager.playFailEffect();
+    }
+
     // TODO: 显示失败界面
   }
 
@@ -340,7 +376,20 @@ export class GameScene extends Phaser.Scene {
     pauseBtn.setScrollFactor(0);
     pauseBtn.setDepth(100);
     pauseBtn.setInteractive({ useHandCursor: true });
-    pauseBtn.on('pointerdown', () => this.togglePause());
+    
+    // 按钮悬停效果
+    pauseBtn.on('pointerover', () => {
+      this.vfxManager.onButtonHover(pauseBtn, true);
+    });
+    pauseBtn.on('pointerout', () => {
+      this.vfxManager.onButtonHover(pauseBtn, false);
+    });
+    
+    // 按钮点击效果
+    pauseBtn.on('pointerdown', () => {
+      this.vfxManager.onButtonClick(pauseBtn);
+      this.togglePause();
+    });
   }
 
   /**
@@ -374,6 +423,9 @@ export class GameScene extends Phaser.Scene {
 
     // 清理输入监听器
     this.input.removeAllListeners();
+
+    // 清理特效管理器
+    this.vfxManager?.destroy();
 
     // 清理游戏对象
     this.player?.destroy();

@@ -10,6 +10,7 @@
 
 import Phaser from 'phaser';
 import { levelManager, LevelData } from '../systems/LevelManager';
+import { VfxManager } from '../systems/VfxManager';
 
 interface LevelCompleteData {
   level: number;
@@ -27,6 +28,7 @@ export class LevelCompleteScene extends Phaser.Scene {
   private timeUsed: number = 0;
   private calculatedStars: number = 0;
   private levelData: LevelData | null = null;
+  private vfxManager!: VfxManager;
 
   constructor() {
     super({ key: 'LevelCompleteScene' });
@@ -46,6 +48,9 @@ export class LevelCompleteScene extends Phaser.Scene {
   create(): void {
     const { width, height } = this.cameras.main;
 
+    // 初始化特效管理器
+    this.vfxManager = new VfxManager(this);
+
     // 半透明背景
     const overlay = this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.8);
     overlay.setDepth(0);
@@ -53,6 +58,11 @@ export class LevelCompleteScene extends Phaser.Scene {
     // 创建容器用于动画
     const container = this.add.container(width / 2, height / 2);
     container.setDepth(1);
+
+    // 播放成功特效（延迟一点，等 UI 出现后）
+    this.time.delayedCall(300, () => {
+      this.vfxManager.playSuccessEffect(width / 2, -height / 3);
+    });
 
     // 完成文字（带动画）
     const completeText = this.add.text(
@@ -395,29 +405,17 @@ export class LevelCompleteScene extends Phaser.Scene {
 
     button.add([bg, btnText]);
 
-    // 按钮交互效果
-    bg.on('pointerover', () => {
-      bg.setFillStyle(Phaser.Display.Color.GetColor(
-        Phaser.Display.Color.GetR(color) + 20,
-        Phaser.Display.Color.GetG(color) + 20,
-        Phaser.Display.Color.GetB(color) + 20
-      ));
+    // 按钮交互效果（使用 VfxManager）
+    button.on('pointerover', () => {
+      this.vfxManager.onButtonHover(button, true);
     });
     
-    bg.on('pointerout', () => {
-      bg.setFillStyle(color);
+    button.on('pointerout', () => {
+      this.vfxManager.onButtonHover(button, false);
     });
     
-    bg.on('pointerdown', () => {
-      bg.setFillStyle(Phaser.Display.Color.GetColor(
-        Phaser.Display.Color.GetR(color) - 30,
-        Phaser.Display.Color.GetG(color) - 30,
-        Phaser.Display.Color.GetB(color) - 30
-      ));
-    });
-    
-    bg.on('pointerup', () => {
-      bg.setFillStyle(color);
+    button.on('pointerdown', () => {
+      this.vfxManager.onButtonClick(button);
       callback();
     });
 
@@ -476,5 +474,20 @@ export class LevelCompleteScene extends Phaser.Scene {
     this.time.delayedCall(2000, () => {
       this.scene.start('MenuScene');
     });
+  }
+
+  /**
+   * 场景关闭时清理资源
+   */
+  shutdown(): void {
+    this.vfxManager?.destroy();
+  }
+
+  /**
+   * 场景销毁时清理资源
+   */
+  destroy(): void {
+    this.shutdown();
+    super.destroy();
   }
 }
