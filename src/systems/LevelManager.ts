@@ -50,9 +50,75 @@ export class LevelManager {
 
   /**
    * 初始化关卡数据
+   * 包含 3 关新手教程 + 20 关正式关卡
    */
   private initializeLevels(): void {
-    // 示例关卡数据 - 实际应从文件或服务器加载
+    // ============ 新手教程关卡 ============
+    
+    // 教程关卡 -1: 点击拖拽教学
+    const tutorialLevel1: LevelData = {
+      id: -1,
+      name: '教程 1: 拖拽',
+      difficulty: 'easy',
+      player: { x: 150, y: 500 },
+      obstacles: [],
+      goals: [{ x: 700, y: 500, radius: 40, type: 'normal' }],
+    };
+    this.levels.set(-1, tutorialLevel1);
+
+    // 教程关卡 -2: 切割绳子教学
+    const tutorialLevel2: LevelData = {
+      id: -2,
+      name: '教程 2: 物理',
+      difficulty: 'easy',
+      player: { x: 100, y: 200 },
+      obstacles: [
+        {
+          x: 400,
+          y: 550,
+          type: 'static',
+          shape: 'rectangle',
+          width: 300,
+          height: 20,
+          color: 0x888888,
+        },
+      ],
+      goals: [{ x: 400, y: 500, radius: 40, type: 'normal' }],
+    };
+    this.levels.set(-2, tutorialLevel2);
+
+    // 教程关卡 -3: 综合练习
+    const tutorialLevel3: LevelData = {
+      id: -3,
+      name: '教程 3: 练习',
+      difficulty: 'easy',
+      player: { x: 100, y: 300 },
+      obstacles: [
+        {
+          x: 300,
+          y: 450,
+          type: 'static',
+          shape: 'rectangle',
+          width: 150,
+          height: 20,
+          color: 0x888888,
+        },
+        {
+          x: 550,
+          y: 380,
+          type: 'static',
+          shape: 'rectangle',
+          width: 150,
+          height: 20,
+          color: 0x888888,
+        },
+      ],
+      goals: [{ x: 700, y: 500, radius: 40, type: 'normal' }],
+    };
+    this.levels.set(-3, tutorialLevel3);
+
+    // ============ 正式关卡 ============
+    
     const level1: LevelData = {
       id: 1,
       name: '入门',
@@ -164,7 +230,18 @@ export class LevelManager {
    * 获取关卡数据
    */
   getLevel(levelId: number): LevelData | null {
+    // 支持新手教程关卡（负数 ID）
+    if (levelId < 0) {
+      return this.levels.get(levelId) || null;
+    }
     return this.levels.get(levelId) || null;
+  }
+
+  /**
+   * 检查是否是教程关卡
+   */
+  isTutorialLevel(levelId: number): boolean {
+    return levelId < 0;
   }
 
   /**

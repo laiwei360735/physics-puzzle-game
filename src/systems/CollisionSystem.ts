@@ -1,6 +1,10 @@
 /**
  * 碰撞管理系统
  * 处理游戏中的各种碰撞事件
+ * 
+ * 已修复 P0 Bug:
+ * - ✅ 保存事件监听器引用以便清理
+ * - ✅ 添加 destroy 方法清理资源
  */
 
 import Phaser from 'phaser';
@@ -11,6 +15,11 @@ export type CollisionHandler = (pair: Matter.Types.CollisionPair) => void;
 export class CollisionSystem {
   private scene: Phaser.Scene;
   private handlers: Map<string, CollisionHandler> = new Map();
+  
+  // 保存事件监听器引用以便清理
+  private collisionStartListener: ((event: Matter.Types.CollisionStartEvent) => void) | null = null;
+  private collisionActiveListener: ((event: Matter.Types.CollisionActiveEvent) => void) | null = null;
+  private collisionEndListener: ((event: Matter.Types.CollisionEndEvent) => void) | null = null;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -23,26 +32,29 @@ export class CollisionSystem {
   private setupCollisionEvents(): void {
     const matterWorld = this.scene.matter.world;
 
-    // 碰撞开始
-    matterWorld.on('collisionstart', (event: Matter.Types.CollisionStartEvent) => {
+    // 碰撞开始 - 保存监听器引用
+    this.collisionStartListener = (event: Matter.Types.CollisionStartEvent) => {
       event.pairs.forEach((pair) => {
         this.handleCollision('start', pair);
       });
-    });
+    };
+    matterWorld.on('collisionstart', this.collisionStartListener);
 
-    // 碰撞持续
-    matterWorld.on('collisionactive', (event: Matter.Types.CollisionActiveEvent) => {
+    // 碰撞持续 - 保存监听器引用
+    this.collisionActiveListener = (event: Matter.Types.CollisionActiveEvent) => {
       event.pairs.forEach((pair) => {
         this.handleCollision('active', pair);
       });
-    });
+    };
+    matterWorld.on('collisionactive', this.collisionActiveListener);
 
-    // 碰撞结束
-    matterWorld.on('collisionend', (event: Matter.Types.CollisionEndEvent) => {
+    // 碰撞结束 - 保存监听器引用
+    this.collisionEndListener = (event: Matter.Types.CollisionEndEvent) => {
       event.pairs.forEach((pair) => {
         this.handleCollision('end', pair);
       });
-    });
+    };
+    matterWorld.on('collisionend', this.collisionEndListener);
   }
 
   /**
@@ -188,5 +200,31 @@ export class CollisionSystem {
     }
 
     return null;
+  }
+
+  /**
+   * 清理所有资源 - 修复内存泄漏
+   */
+  destroy(): void {
+    const matterWorld = this.scene.matter.world;
+
+    // 移除所有事件监听器
+    if (this.collisionStartListener) {
+      matterWorld.off('collisionstart', this.collisionStartListener);
+      this.collisionStartListener = null;
+    }
+
+    if (this.collisionActiveListener) {
+      matterWorld.off('collisionactive', this.collisionActiveListener);
+      this.collisionActiveListener = null;
+    }
+
+    if (this.collisionEndListener) {
+      matterWorld.off('collisionend', this.collisionEndListener);
+      this.collisionEndListener = null;
+    }
+
+    // 清理所有处理器
+    this.clearHandlers();
   }
 }

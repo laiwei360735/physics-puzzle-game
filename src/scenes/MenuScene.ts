@@ -38,13 +38,26 @@ export class MenuScene extends Phaser.Scene {
     );
     subtitle.setOrigin(0.5);
 
-    // 开始按钮
+    // 开始游戏按钮（从教程开始）
     this.createButton(
       width / 2,
       height / 2,
       200,
       60,
       '开始游戏',
+      () => {
+        // 从教程关卡 -3 开始
+        this.scene.start('GameScene', { level: -3 });
+      }
+    );
+
+    // 快速开始（跳过教程）
+    this.createButton(
+      width / 2,
+      height / 2 + 80,
+      200,
+      60,
+      '快速开始',
       () => {
         this.scene.start('GameScene', { level: 1 });
       }
@@ -53,7 +66,7 @@ export class MenuScene extends Phaser.Scene {
     // 关卡选择按钮
     this.createButton(
       width / 2,
-      height / 2 + 80,
+      height / 2 + 160,
       200,
       60,
       '关卡选择',
@@ -66,7 +79,7 @@ export class MenuScene extends Phaser.Scene {
     // 设置按钮
     this.createButton(
       width / 2,
-      height / 2 + 160,
+      height / 2 + 240,
       200,
       60,
       '设置',

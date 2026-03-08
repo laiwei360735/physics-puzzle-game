@@ -1,291 +1,346 @@
 /**
  * 游戏主场景 - 核心游戏玩法
+ * 
+ * 已修复 P0 Bug:
+ * - ✅ 实现拖拽功能
+ * - ✅ 实现碰撞检测回调
+ * - ✅ 添加 shutdown/destroy 方法清理资源
+ * - ✅ 移除重复的世界边界创建
  */
 
 import Phaser from 'phaser';
-import Matter from 'matter-js';
-
-interface GameSceneData {
-  level: number;
-}
+import { Player } from '../entities/Player';
+import { Obstacle } from '../entities/Obstacle';
+import { Goal } from '../entities/Goal';
+import { InputManager } from '../systems/InputManager';
+import { CollisionSystem } from '../systems/CollisionSystem';
+import { LevelManager, LevelData } from '../systems/LevelManager';
+import { GameStateManager, GameState } from '../systems/GameStateManager';
 
 export class GameScene extends Phaser.Scene {
   private level!: number;
   private score: number = 0;
   private isPaused: boolean = false;
 
-  // Matter.js 实体
-  private matterWorld!: Matter.World;
-  private matterRunner!: Matter.Runner;
+  // 核心系统
+  private inputManager!: InputManager;
+  private collisionSystem!: CollisionSystem;
+  private levelManager!: LevelManager;
+  private gameStateManager!: GameStateManager;
 
-  // 游戏对象组
-  private playerGroup!: Phaser.Physics.Matter.MatterBody[];
-  private obstacleGroup!: Phaser.GameObjects.Container[];
-  private goalGroup!: Phaser.GameObjects.Container[];
+  // 游戏对象
+  private player!: Player | null;
+  private obstacles: Obstacle[] = [];
+  private goals: Goal[] = [];
+
+  // 拖拽状态
+  private isDragging: boolean = false;
+  private dragConstraint: any = null;
+  private dragObject: Phaser.Physics.Matter.MatterBody | null = null;
 
   constructor() {
     super({ key: 'GameScene' });
   }
 
-  init(data: GameSceneData): void {
+  init(data: { level: number }): void {
     this.level = data.level || 1;
     this.score = 0;
+    this.isPaused = false;
   }
 
   create(): void {
     const { width, height } = this.cameras.main;
 
-    // 获取 Matter.js 世界
-    this.matterWorld = this.matter.world;
+    // 初始化系统
+    this.levelManager = new LevelManager();
+    this.gameStateManager = new GameStateManager();
+    this.inputManager = new InputManager(this);
+    this.collisionSystem = new CollisionSystem(this);
 
-    // 设置世界边界
-    this.createWorldBoundaries(width, height);
-
-    // 初始化游戏对象组
-    this.playerGroup = [];
-    this.obstacleGroup = [];
-    this.goalGroup = [];
+    // 设置 Matter.js 配置 - 只使用 setBounds，不重复创建墙壁
+    this.matter.world.setBounds(0, 0, width, height);
+    this.matter.setGravity(0, 1); // 标准重力
 
     // 加载关卡
     this.loadLevel(this.level);
 
+    // 设置输入控制（拖拽功能）
+    this.setupInput();
+
     // 设置碰撞检测
     this.setupCollisions();
-
-    // 启动物理引擎
-    this.startPhysics();
 
     // 创建 UI
     this.createUI();
 
-    // 输入控制
-    this.setupInput();
+    // 设置游戏状态
+    this.gameStateManager.setState('playing');
 
-    console.log(`游戏场景创建 - 关卡 ${this.level}`);
+    console.log(`🎮 游戏场景创建 - 关卡 ${this.level}`);
   }
 
   update(time: number, delta: number): void {
-    if (this.isPaused) return;
+    if (this.isPaused || this.gameStateManager.getState() !== 'playing') return;
 
-    // 游戏主循环逻辑
-    this.updateGameLogic(time, delta);
-  }
+    // 更新拖拽逻辑
+    this.updateDrag();
 
-  /**
-   * 创建世界边界
-   */
-  private createWorldBoundaries(width: number, height: number): void {
-    const wallThickness = 100;
-    
-    this.matterWorld.setBounds(0, 0, width, height);
-    
-    // 添加额外的边界墙（如果需要）
-    const walls = [
-      this.matter.add.rectangle(width / 2, -wallThickness / 2, width, wallThickness, { isStatic: true }),
-      this.matter.add.rectangle(width / 2, height + wallThickness / 2, width, wallThickness, { isStatic: true }),
-      this.matter.add.rectangle(-wallThickness / 2, height / 2, wallThickness, height, { isStatic: true }),
-      this.matter.add.rectangle(width + wallThickness / 2, height / 2, wallThickness, height, { isStatic: true }),
-    ];
+    // 检查关卡完成条件
+    this.checkLevelComplete();
   }
 
   /**
    * 加载关卡
    */
   private loadLevel(levelNum: number): void {
-    // 根据关卡编号加载不同的关卡配置
-    // TODO: 实现关卡数据加载系统
-    const levelData = this.getLevelData(levelNum);
-    this.buildLevel(levelData);
-  }
+    const levelData = this.levelManager.getLevel(levelNum);
+    if (!levelData) {
+      console.error(`关卡 ${levelNum} 不存在`);
+      return;
+    }
 
-  /**
-   * 获取关卡数据
-   */
-  private getLevelData(levelNum: number): any {
-    // 示例关卡数据 - 实际应从文件或服务端加载
-    return {
-      player: { x: 100, y: 300, type: 'circle' },
-      obstacles: [
-        { x: 400, y: 400, type: 'rectangle', width: 200, height: 20 },
-        { x: 600, y: 300, type: 'triangle' },
-      ],
-      goal: { x: 700, y: 200 },
-    };
+    this.buildLevel(levelData);
   }
 
   /**
    * 构建关卡
    */
-  private buildLevel(levelData: any): void {
-    const { width, height } = this.cameras.main;
-
+  private buildLevel(levelData: LevelData): void {
     // 创建玩家
-    this.createPlayer(levelData.player.x, levelData.player.y);
+    if (levelData.player) {
+      this.player = new Player(
+        this,
+        levelData.player.x,
+        levelData.player.y,
+        levelData.player.radius || 25
+      );
+    }
 
     // 创建障碍物
-    levelData.obstacles.forEach((obs: any) => {
-      this.createObstacle(obs.x, obs.y, obs.type, obs.width, obs.height);
-    });
+    if (levelData.obstacles) {
+      levelData.obstacles.forEach(obs => {
+        const obstacle = new Obstacle(this, obs);
+        this.obstacles.push(obstacle);
+      });
+    }
 
     // 创建目标
-    this.createGoal(levelData.goal.x, levelData.goal.y);
-  }
-
-  /**
-   * 创建玩家
-   */
-  private createPlayer(x: number, y: number): void {
-    const player = this.matter.add.image(x, y, 'circle');
-    this.matter.setCircle(player, 25);
-    this.matter.setBounce(player, 0.5);
-    this.matter.setFriction(player, 0.1);
-    
-    player.setInteractive();
-    this.playerGroup.push(player);
-  }
-
-  /**
-   * 创建障碍物
-   */
-  private createObstacle(x: number, y: number, type: string, width?: number, height?: number): void {
-    let obstacle: Phaser.GameObjects.Container;
-
-    if (type === 'rectangle') {
-      const rect = this.add.rectangle(0, 0, width || 100, height || 20, 0x888888);
-      obstacle = this.add.container(x, y, [rect]);
-      
-      const body = this.matter.add.gameObject(rect, {
-        isStatic: true,
-        friction: 0.8,
-      });
-    } else if (type === 'triangle') {
-      const triangle = this.add.polygon(0, 0, 3, 40, 0x884444);
-      obstacle = this.add.container(x, y, [triangle]);
-      
-      const body = this.matter.add.gameObject(triangle, {
-        isStatic: true,
-        friction: 0.8,
+    if (levelData.goals) {
+      levelData.goals.forEach(goal => {
+        const goalObj = new Goal(this, goal);
+        this.goals.push(goalObj);
       });
     }
-
-    if (obstacle) {
-      this.obstacleGroup.push(obstacle);
-    }
   }
 
   /**
-   * 创建目标
-   */
-  private createGoal(x: number, y: number): void {
-    const goal = this.add.circle(x, y, 30, 0x00ff00, 0.8);
-    goal.setInteractive();
-    
-    const body = this.matter.add.gameObject(goal, {
-      isSensor: true, // 传感器，不产生物理碰撞
-    });
-
-    this.goalGroup.push(goal);
-  }
-
-  /**
-   * 设置碰撞检测
-   */
-  private setupCollisions(): void {
-    this.matterWorld.on('collisionstart', (event: Matter.Types.CollisionStartEvent) => {
-      const pairs = event.pairs;
-
-      pairs.forEach((pair) => {
-        const { bodyA, bodyB } = pair;
-        
-        // 检测玩家与目标的碰撞
-        this.checkGoalCollision(bodyA, bodyB);
-      });
-    });
-  }
-
-  /**
-   * 检查目标碰撞
-   */
-  private checkGoalCollision(bodyA: Matter.Body, bodyB: Matter.Body): void {
-    // TODO: 实现碰撞逻辑
-  }
-
-  /**
-   * 启动物理引擎
-   */
-  private startPhysics(): void {
-    // Matter.js runner 已由 Phaser 自动管理
-  }
-
-  /**
-   * 创建 UI
-   */
-  private createUI(): void {
-    const { width } = this.cameras.main;
-
-    // 分数显示
-    this.add.text(20, 20, `分数：${this.score}`, {
-      font: '24px Arial',
-      color: '#ffffff',
-    });
-
-    // 关卡显示
-    this.add.text(width - 120, 20, `关卡：${this.level}`, {
-      font: '24px Arial',
-      color: '#ffffff',
-    });
-
-    // 暂停按钮
-    const pauseBtn = this.add.text(width - 60, 20, '⏸', {
-      font: '24px Arial',
-      color: '#ffffff',
-    });
-    pauseBtn.setInteractive({ useHandCursor: true });
-    pauseBtn.on('pointerdown', () => this.togglePause());
-  }
-
-  /**
-   * 设置输入控制
+   * 设置输入控制 - 实现拖拽功能
    */
   private setupInput(): void {
-    // 键盘控制
-    this.input.keyboard?.on('keydown-ESC', () => {
-      this.togglePause();
-    });
-
-    // 触摸/鼠标控制
+    // 鼠标/触摸按下
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       this.handlePointerDown(pointer);
     });
 
+    // 鼠标/触摸移动
     this.input.on('pointermove', (pointer: Phaser.Input.Pointer) => {
       this.handlePointerMove(pointer);
     });
 
+    // 鼠标/触摸释放
     this.input.on('pointerup', () => {
       this.handlePointerUp();
     });
   }
 
   /**
-   * 处理指针按下
+   * 处理按下事件 - 开始拖拽
    */
   private handlePointerDown(pointer: Phaser.Input.Pointer): void {
-    // TODO: 实现玩家控制逻辑
+    if (!this.player || !this.player.body) return;
+
+    const worldPoint = this.matter.mouseConstraint.mouse.position;
+    const playerBody = this.player.body;
+
+    // 检查是否点击到玩家
+    const distance = Phaser.Math.Distance.Between(
+      worldPoint.x,
+      worldPoint.y,
+      playerBody.position.x,
+      playerBody.position.y
+    );
+
+    if (distance <= playerBody.circleRadius * 2) {
+      this.isDragging = true;
+      this.dragObject = playerBody;
+
+      // 创建拖拽约束
+      this.dragConstraint = this.matter.add.constraint(
+        playerBody,
+        { x: worldPoint.x, y: worldPoint.y },
+        0,
+        {
+          stiffness: 0.05,
+          damping: 0.1,
+          length: 0
+        }
+      );
+
+      console.log('👆 开始拖拽玩家');
+    }
   }
 
   /**
-   * 处理指针移动
+   * 处理移动事件 - 更新拖拽位置
    */
   private handlePointerMove(pointer: Phaser.Input.Pointer): void {
-    // TODO: 实现拖拽逻辑
+    if (!this.isDragging || !this.dragConstraint) return;
+
+    const worldPoint = this.matter.mouseConstraint.mouse.position;
+
+    // 更新约束的目标点
+    if (this.dragConstraint.bodyB) {
+      this.dragConstraint.bodyB.x = worldPoint.x;
+      this.dragConstraint.bodyB.y = worldPoint.y;
+    }
   }
 
   /**
-   * 处理指针释放
+   * 处理释放事件 - 结束拖拽
    */
   private handlePointerUp(): void {
-    // TODO: 实现释放逻辑
+    if (!this.isDragging) return;
+
+    // 移除拖拽约束
+    if (this.dragConstraint) {
+      this.matter.world.removeConstraint(this.dragConstraint);
+      this.dragConstraint = null;
+    }
+
+    this.isDragging = false;
+    this.dragObject = null;
+
+    console.log('👋 释放玩家');
+  }
+
+  /**
+   * 更新拖拽逻辑
+   */
+  private updateDrag(): void {
+    if (this.isDragging && this.dragConstraint && this.player?.body) {
+      // 拖拽中，物理引擎会自动处理
+    }
+  }
+
+  /**
+   * 设置碰撞检测
+   */
+  private setupCollisions(): void {
+    // 玩家与目标碰撞
+    this.matter.world.on('collisionstart', (event: Matter.Events.CollisionStart) => {
+      event.pairs.forEach(pair => {
+        const bodyA = pair.bodyA;
+        const bodyB = pair.bodyB;
+
+        // 检查玩家是否碰到目标
+        this.goals.forEach(goal => {
+          if (!this.player?.body) return;
+
+          if ((bodyA === this.player.body && bodyB === goal.body) ||
+              (bodyB === this.player.body && bodyA === goal.body)) {
+            this.handlePlayerReachGoal(goal);
+          }
+        });
+      });
+    });
+  }
+
+  /**
+   * 处理玩家到达目标
+   */
+  private handlePlayerReachGoal(goal: Goal): void {
+    if (this.gameStateManager.getState() !== 'playing') return;
+
+    console.log('🎯 玩家到达目标！');
+
+    // 播放成功效果
+    this.tweens.add({
+      targets: goal.sprite,
+      scale: 1.5,
+      alpha: 0,
+      duration: 500,
+      ease: 'Power2',
+      onComplete: () => {
+        this.levelComplete();
+      }
+    });
+  }
+
+  /**
+   * 检查关卡完成
+   */
+  private checkLevelComplete(): void {
+    // 额外检查：玩家是否掉出世界
+    if (this.player?.body) {
+      const { height } = this.cameras.main;
+      if (this.player.body.position.y > height + 100) {
+        this.levelFailed();
+      }
+    }
+  }
+
+  /**
+   * 关卡完成
+   */
+  private levelComplete(): void {
+    this.gameStateManager.setState('levelComplete');
+    this.score += 100;
+
+    console.log(`✅ 关卡 ${this.level} 完成！得分：${this.score}`);
+
+    // 延迟显示结算界面
+    this.time.delayedCall(500, () => {
+      this.scene.launch('LevelCompleteScene', {
+        level: this.level,
+        score: this.score,
+        stars: 3 // TODO: 根据表现计算星级
+      });
+    });
+  }
+
+  /**
+   * 关卡失败
+   */
+  private levelFailed(): void {
+    this.gameStateManager.setState('failed');
+
+    console.log(`❌ 关卡 ${this.level} 失败`);
+
+    // TODO: 显示失败界面
+  }
+
+  /**
+   * 创建 UI
+   */
+  private createUI(): void {
+    // 创建分数文本
+    const scoreText = this.add.text(20, 20, `得分：${this.score}`, {
+      fontSize: '24px',
+      color: '#ffffff',
+      stroke: '#000000',
+      strokeThickness: 4
+    });
+    scoreText.setScrollFactor(0);
+    scoreText.setDepth(100);
+
+    // 创建暂停按钮
+    const pauseBtn = this.add.text(this.cameras.main.width - 100, 20, '⏸️', {
+      fontSize: '32px'
+    });
+    pauseBtn.setScrollFactor(0);
+    pauseBtn.setDepth(100);
+    pauseBtn.setInteractive({ useHandCursor: true });
+    pauseBtn.on('pointerdown', () => this.togglePause());
   }
 
   /**
@@ -293,50 +348,50 @@ export class GameScene extends Phaser.Scene {
    */
   private togglePause(): void {
     this.isPaused = !this.isPaused;
-    
+    this.matter.world.pause(this.isPaused);
+
     if (this.isPaused) {
-      this.matterWorld.pause();
+      this.gameStateManager.setState('paused');
     } else {
-      this.matterWorld.resume();
+      this.gameStateManager.setState('playing');
     }
   }
 
   /**
-   * 更新游戏逻辑
+   * 场景关闭时清理资源 - 修复内存泄漏
    */
-  private updateGameLogic(time: number, delta: number): void {
-    // 检查玩家是否掉落
-    this.checkPlayerFall();
+  shutdown(): void {
+    console.log('🧹 清理游戏场景资源');
+
+    // 清理拖拽约束
+    if (this.dragConstraint) {
+      this.matter.world.removeConstraint(this.dragConstraint);
+      this.dragConstraint = null;
+    }
+
+    // 清理碰撞监听器
+    this.matter.world.removeAllListeners('collisionstart');
+
+    // 清理输入监听器
+    this.input.removeAllListeners();
+
+    // 清理游戏对象
+    this.player?.destroy();
+    this.obstacles.forEach(obs => obs.destroy());
+    this.goals.forEach(goal => goal.destroy());
+
+    this.obstacles = [];
+    this.goals = [];
+    this.player = null;
+    this.isDragging = false;
+    this.dragObject = null;
   }
 
   /**
-   * 检查玩家掉落
+   * 场景销毁时彻底清理 - 修复内存泄漏
    */
-  private checkPlayerFall(): void {
-    const { height } = this.cameras.main;
-    
-    this.playerGroup.forEach((player) => {
-      if (player.position.y > height + 100) {
-        // 玩家掉落，重置关卡
-        this.scene.restart();
-      }
-    });
-  }
-
-  /**
-   * 增加分数
-   */
-  addScore(points: number): void {
-    this.score += points;
-  }
-
-  /**
-   * 完成关卡
-   */
-  completeLevel(): void {
-    this.scene.start('LevelCompleteScene', {
-      level: this.level,
-      score: this.score,
-    });
+  destroy(): void {
+    this.shutdown();
+    super.destroy();
   }
 }
