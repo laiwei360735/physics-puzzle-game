@@ -1337,6 +1337,36 @@ export class LevelManager {
   /**
    * 保存星级评价
    */
+  /**
+   * 加载星级进度（从 localStorage）
+   */
+  loadStarProgress(): void {
+    try {
+      const saved = localStorage.getItem('physics-puzzle-star-progress');
+      if (saved) {
+        const data = JSON.parse(saved);
+        this.starProgress = new Map(Object.entries(data));
+        console.log('✅ 加载星级进度:', this.starProgress.size, '关');
+      }
+    } catch (error) {
+      console.warn('⚠️ 加载星级进度失败（可能是微信环境不支持 localStorage）:', error);
+      this.starProgress = new Map();
+    }
+  }
+
+  /**
+   * 保存星级进度到 localStorage
+   */
+  private saveProgress(): void {
+    try {
+      // Map 转 Object 以便 JSON 序列化
+      const data = Object.fromEntries(this.starProgress);
+      localStorage.setItem('physics-puzzle-star-progress', JSON.stringify(data));
+    } catch (error) {
+      console.error('保存进度失败:', error);
+    }
+  }
+
   saveStarProgress(levelId: number, stars: number, score: number, collectedStars: number, moves: number): void {
     try {
       const existing = this.starProgress.get(levelId);
