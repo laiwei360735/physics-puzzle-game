@@ -66,13 +66,6 @@ export class GameScene extends Phaser.Scene {
     super({ key: 'GameScene' });
   }
 
-  init(): void {
-    // 确保 Matter.js 物理引擎初始化
-    if (!this.matter) {
-      console.error('❌ Matter.js 未初始化，检查游戏配置');
-    }
-  }
-
   init(data: { level: number }): void {
     this.level = data.level || 1;
     this.score = 0;
