@@ -575,11 +575,12 @@ export class LevelManager {
     };
 
     // 关卡 10: BOSS 关 - 精准送达
+    // P1 修复：降低难度，三星要求从 3 星降到 2 星
     const level10: LevelData = {
       id: 10,
       name: '精准送达',
       difficulty: 'medium',
-      starRating: 3,
+      starRating: 2, // 从 3 降到 2，降低难度跳跃
       player: { x: 200, y: 180 },
       obstacles: [
         {
@@ -626,7 +627,7 @@ export class LevelManager {
       starCriteria: {
         oneStar: { minScore: 200 },
         twoStars: { minScore: 300, collectStars: 2 },
-        threeStars: { minScore: 400, collectStars: 3, maxMoves: 4 },
+        threeStars: { minScore: 400, collectStars: 2, maxMoves: 4 }, // 从 3 星降到 2 星
       },
     };
 
