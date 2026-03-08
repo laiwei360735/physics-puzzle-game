@@ -83,15 +83,17 @@ export class GameScene extends Phaser.Scene {
     this.vfxManager = new VfxManager(this);
     this.tutorialManager = new TutorialManager(this);
     
-    // 设置 Matter.js 配置 - 使用正确的 API
-    // 在 Scene 配置了 physics 后，this.physics 就是 Matter.js 的实例
-    const matterPhysics = (this.physics as any);
-    if (matterPhysics && matterPhysics.world) {
-      matterPhysics.world.setBounds(0, 0, width, height);
-      matterPhysics.setGravity(0, 1);
+    // 设置 Matter.js 配置 - 使用 this.matter (Phaser 3 + Matter.js 的正确 API)
+    const matterWorld = (this as any).matter?.world;
+    if (matterWorld) {
+      matterWorld.setBounds(0, 0, width, height);
+      (this as any).matter.setGravity(0, 1);
       console.log('✅ Matter.js 初始化成功');
     } else {
       console.error('❌ Matter.js 未启用，检查游戏配置');
+      console.log('this:', this);
+      console.log('this.matter:', (this as any).matter);
+      console.log('this.physics:', (this as any).physics);
     }
 
     // 加载关卡
