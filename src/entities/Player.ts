@@ -27,7 +27,8 @@ export class Player extends Phaser.GameObjects.Container {
     // 创建圆形身体
     const radius = 25;
     
-    this.body = this.scene.matter.add.circle(this.x, this.y, radius, {
+    const matterPhysics = (this.scene.physics as any);
+    this.body = matterPhysics.add.circle(this.x, this.y, radius, {
       density: 0.001,
       friction: 0.1,
       restitution: 0.5, // 弹性
@@ -42,7 +43,7 @@ export class Player extends Phaser.GameObjects.Container {
     this.add(graphics);
 
     // 设置物理属性
-    this.scene.matter.setGameObject(this, this.body);
+    matterPhysics.setGameObject(this, this.body);
   }
 
   /**
@@ -55,6 +56,13 @@ export class Player extends Phaser.GameObjects.Container {
   }
 
   /**
+   * 获取 Matter.js 物理实例
+   */
+  private getMatterPhysics(): any {
+    return (this.scene.physics as any);
+  }
+
+  /**
    * 应用物理
    */
   private applyPhysics(delta: number): void {
@@ -64,7 +72,8 @@ export class Player extends Phaser.GameObjects.Container {
     
     if (speed > this.maxVelocity) {
       const scale = this.maxVelocity / speed;
-      this.scene.matter.setVelocity(this.body, {
+      const matter = this.getMatterPhysics();
+      matter.setVelocity(this.body, {
         x: velocity.x * scale,
         y: velocity.y * scale,
       });
@@ -78,7 +87,8 @@ export class Player extends Phaser.GameObjects.Container {
     this.isDragging = true;
     
     // 创建拖拽约束
-    this.dragConstraint = this.scene.matter.add.constraint(
+    const matter = this.getMatterPhysics();
+    this.dragConstraint = matter.add.constraint(
       this.body,
       { x: pointer.x, y: pointer.y },
       0,
@@ -95,7 +105,8 @@ export class Player extends Phaser.GameObjects.Container {
    */
   updateDrag(pointer: Phaser.Input.Pointer): void {
     if (this.isDragging && this.dragConstraint) {
-      this.scene.matter.setPosition(
+      const matter = this.getMatterPhysics();
+      matter.setPosition(
         this.dragConstraint.pointB as Matter.Vector,
         { x: pointer.x, y: pointer.y }
       );
@@ -109,7 +120,8 @@ export class Player extends Phaser.GameObjects.Container {
     this.isDragging = false;
     
     if (this.dragConstraint) {
-      this.scene.matter.world.removeConstraint(this.dragConstraint);
+      const matter = this.getMatterPhysics();
+      matter.world.removeConstraint(this.dragConstraint);
       this.dragConstraint = null;
     }
   }
@@ -118,7 +130,8 @@ export class Player extends Phaser.GameObjects.Container {
    * 施加力
    */
   applyForce(x: number, y: number): void {
-    this.scene.matter.applyForce(this.body, this.body.position, { x, y });
+    const matter = this.getMatterPhysics();
+    matter.applyForce(this.body, this.body.position, { x, y });
   }
 
   /**
@@ -126,7 +139,8 @@ export class Player extends Phaser.GameObjects.Container {
    */
   jump(): void {
     if (this.isOnGround()) {
-      this.scene.matter.applyForce(this.body, this.body.position, {
+      const matter = this.getMatterPhysics();
+      matter.applyForce(this.body, this.body.position, {
         x: 0,
         y: -this.jumpForce,
       });
@@ -152,7 +166,8 @@ export class Player extends Phaser.GameObjects.Container {
    * 设置玩家位置
    */
   setPosition(x: number, y: number): void {
-    this.scene.matter.setPosition(this.body, { x, y });
+    const matter = this.getMatterPhysics();
+    matter.setPosition(this.body, { x, y });
   }
 
   /**
@@ -160,8 +175,9 @@ export class Player extends Phaser.GameObjects.Container {
    */
   reset(x: number, y: number): void {
     this.setPosition(x, y);
-    this.scene.matter.setVelocity(this.body, { x: 0, y: 0 });
-    this.scene.matter.setAngularVelocity(this.body, 0);
+    const matter = this.getMatterPhysics();
+    matter.setVelocity(this.body, { x: 0, y: 0 });
+    matter.setAngularVelocity(this.body, 0);
   }
 
   /**
@@ -169,7 +185,8 @@ export class Player extends Phaser.GameObjects.Container {
    */
   destroy(fromScene?: boolean): void {
     if (this.dragConstraint) {
-      this.scene.matter.world.removeConstraint(this.dragConstraint);
+      const matter = this.getMatterPhysics();
+      matter.world.removeConstraint(this.dragConstraint);
     }
     super.destroy(fromScene);
   }
