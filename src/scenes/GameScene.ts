@@ -40,6 +40,9 @@ export class GameScene extends Phaser.Scene {
   private tutorialManager!: TutorialManager;
   private starCollector!: StarCollector;
 
+  // Matter.js 物理世界
+  matter!: Phaser.Physics.Matter.MatterWorld;
+
   // 游戏对象
   private player!: Player | null;
   private obstacles: Obstacle[] = [];
@@ -60,7 +63,15 @@ export class GameScene extends Phaser.Scene {
   private failReason: string = '';
 
   constructor() {
-    super({ key: 'GameScene' });
+    super({ 
+      key: 'GameScene',
+      physics: {
+        default: 'matter',
+        matter: {
+          gravity: { y: 1 },
+        }
+      }
+    });
   }
 
   init(data: { level: number }): void {
