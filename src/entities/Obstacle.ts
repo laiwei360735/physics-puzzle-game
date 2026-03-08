@@ -43,6 +43,13 @@ export class Obstacle extends Phaser.GameObjects.Container {
   }
 
   /**
+   * 获取 Matter.js 物理实例
+   */
+  protected getMatterPhysics(): any {
+    return (this.scene.physics as any);
+  }
+
+  /**
    * 创建障碍物
    */
   protected createObstacle(): void {
@@ -143,7 +150,7 @@ export class Obstacle extends Phaser.GameObjects.Container {
     // 根据形状创建对应的物理身体
     if (shape === 'rectangle') {
       const { width = 100, height = 20 } = this.config;
-      this.body = this.scene.matter.add.rectangle(
+      this.body = this.getMatterPhysics().add.rectangle(
         this.x,
         this.y,
         width,
@@ -152,10 +159,10 @@ export class Obstacle extends Phaser.GameObjects.Container {
       );
     } else if (shape === 'circle') {
       const { radius = 30 } = this.config;
-      this.body = this.scene.matter.add.circle(this.x, this.y, radius, bodyOptions);
+      this.body = this.getMatterPhysics().add.circle(this.x, this.y, radius, bodyOptions);
     } else if (shape === 'triangle') {
       const size = 50;
-      this.body = this.scene.matter.add.polygon(
+      this.body = this.getMatterPhysics().add.polygon(
         this.x,
         this.y,
         3,
@@ -164,7 +171,7 @@ export class Obstacle extends Phaser.GameObjects.Container {
       );
     } else if (shape === 'polygon') {
       const { sides = 6, radius = 40 } = this.config;
-      this.body = this.scene.matter.add.polygon(
+      this.body = this.getMatterPhysics().add.polygon(
         this.x,
         this.y,
         sides,
@@ -175,7 +182,7 @@ export class Obstacle extends Phaser.GameObjects.Container {
 
     // 关联游戏对象
     if (this.body) {
-      this.scene.matter.setGameObject(this, this.body);
+      this.getMatterPhysics().setGameObject(this, this.body);
     }
   }
 
@@ -204,12 +211,12 @@ export class Obstacle extends Phaser.GameObjects.Container {
     const offset = Math.sin(time * 0.001 * speed) * range;
     
     if (axis === 'x') {
-      this.scene.matter.setPosition(this.body, {
+      this.getMatterPhysics().setPosition(this.body, {
         x: this.config.x + offset,
         y: this.config.y,
       });
     } else {
-      this.scene.matter.setPosition(this.body, {
+      this.getMatterPhysics().setPosition(this.body, {
         x: this.config.x,
         y: this.config.y + offset,
       });
@@ -222,7 +229,7 @@ export class Obstacle extends Phaser.GameObjects.Container {
   protected updateRotating(delta: number, speed: number): void {
     if (speed !== 0) {
       const rotation = this.body.angle + speed * delta * 0.001;
-      this.scene.matter.setRotation(this.body, rotation);
+      this.getMatterPhysics().setRotation(this.body, rotation);
     }
   }
 
@@ -237,7 +244,7 @@ export class Obstacle extends Phaser.GameObjects.Container {
    * 设置障碍物为传感器（不产生物理碰撞）
    */
   setSensor(isSensor: boolean): void {
-    this.scene.matter.setSensor(this.body, isSensor);
+    this.getMatterPhysics().setSensor(this.body, isSensor);
   }
 
   /**

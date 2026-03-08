@@ -26,6 +26,13 @@ export class Goal extends Phaser.GameObjects.Container {
   }
 
   /**
+   * 获取 Matter.js 物理实例
+   */
+  private getMatterPhysics(): any {
+    return (this.scene.physics as any);
+  }
+
+  /**
    * 创建目标
    */
   private createGoal(): void {
@@ -53,13 +60,13 @@ export class Goal extends Phaser.GameObjects.Container {
     }
 
     // 创建物理身体（传感器）
-    this.body = this.scene.matter.add.circle(this.x, this.y, radius, {
+    this.body = this.getMatterPhysics().add.circle(this.x, this.y, radius, {
       isSensor: true,
       label: 'goal',
     });
 
     // 关联游戏对象
-    this.scene.matter.setGameObject(this, this.body);
+    this.getMatterPhysics().setGameObject(this, this.body);
   }
 
   /**

@@ -55,6 +55,13 @@ export class StarCollector {
   }
 
   /**
+   * 获取 Matter.js 物理实例
+   */
+  private getMatterPhysics(): any {
+    return (this.scene.physics as any);
+  }
+
+  /**
    * 添加星星到关卡
    */
   addStar(id: number, x: number, y: number, radius: number = 20): StarData {
@@ -85,7 +92,7 @@ export class StarCollector {
     });
 
     // 创建物理 body（用于碰撞检测）
-    const starBody = this.scene.matter.bodies.circle(x, y, radius, {
+    const starBody = this.getMatterPhysics().bodies.circle(x, y, radius, {
       isSensor: true, // 传感器，不产生物理碰撞
       label: 'star',
     });

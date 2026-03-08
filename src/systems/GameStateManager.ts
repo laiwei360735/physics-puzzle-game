@@ -41,6 +41,13 @@ export class GameStateManager {
   }
 
   /**
+   * 获取 Matter.js 物理实例
+   */
+  private getMatterPhysics(): any {
+    return (this.scene.physics as any);
+  }
+
+  /**
    * 设置游戏状态
    */
   setState(state: GameState): void {
@@ -97,7 +104,7 @@ export class GameStateManager {
   pause(): void {
     if (this.currentState === 'playing') {
       this.setState('paused');
-      this.scene.matter.world.pause();
+      this.getMatterPhysics().world.pause();
     }
   }
 
@@ -107,7 +114,7 @@ export class GameStateManager {
   resume(): void {
     if (this.currentState === 'paused') {
       this.setState('playing');
-      this.scene.matter.world.resume();
+      this.getMatterPhysics().world.resume();
     }
   }
 
