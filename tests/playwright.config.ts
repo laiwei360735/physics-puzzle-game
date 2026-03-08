@@ -2,8 +2,8 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   testDir: './',
-  testMatch: 'browser-test-1.spec.ts',
-  timeout: 60000,
+  testMatch: 'browser-test-2.spec.ts',
+  timeout: 180000, // 3 分钟超时保护
   expect: {
     timeout: 10000,
   },

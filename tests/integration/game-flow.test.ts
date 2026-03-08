@@ -125,29 +125,37 @@ class GameManager {
   }
 }
 
-// 模拟关卡管理器
+// 模拟关卡管理器 - 使用静态存储实现跨实例持久化
 class LevelManagerMock {
-  private unlockedLevels: Set<string> = new Set(['level-1']);
+  private static unlockedLevels: Set<string> = new Set(['level-1']);
+
+  static reset(): void {
+    LevelManagerMock.unlockedLevels = new Set(['level-1']);
+  }
 
   isLevelUnlocked(levelId: string, progress: Map<string, LevelProgress>): boolean {
-    return this.unlockedLevels.has(levelId);
+    return LevelManagerMock.unlockedLevels.has(levelId);
   }
 
   unlockNextLevel(currentLevelId: string): void {
     const levelNum = parseInt(currentLevelId.split('-')[1]);
     if (!isNaN(levelNum)) {
-      this.unlockedLevels.add(`level-${levelNum + 1}`);
+      LevelManagerMock.unlockedLevels.add(`level-${levelNum + 1}`);
     }
   }
 }
 
-// 模拟存档管理器
+// 模拟存档管理器 - 使用静态存储实现跨实例持久化
 class SaveManagerMock {
-  private storage: Map<string, Map<string, LevelProgress>> = new Map();
+  private static storage: Map<string, Map<string, LevelProgress>> = new Map();
+
+  static reset(): void {
+    SaveManagerMock.storage = new Map();
+  }
 
   save(userId: string, progress: Map<string, LevelProgress>): boolean {
     try {
-      this.storage.set(userId, new Map(progress));
+      SaveManagerMock.storage.set(userId, new Map(progress));
       return true;
     } catch (e) {
       return false;
@@ -155,7 +163,7 @@ class SaveManagerMock {
   }
 
   load(userId: string): Map<string, LevelProgress> | null {
-    const data = this.storage.get(userId);
+    const data = SaveManagerMock.storage.get(userId);
     return data ? new Map(data) : null;
   }
 }
@@ -164,6 +172,9 @@ describe('游戏流程集成测试', () => {
   let gameManager: GameManager;
 
   beforeEach(() => {
+    // 重置静态存储，确保测试隔离
+    LevelManagerMock.reset();
+    SaveManagerMock.reset();
     gameManager = new GameManager();
   });
 

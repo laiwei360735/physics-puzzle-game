@@ -144,7 +144,8 @@ describe('物理引擎测试', () => {
 
       const updatedBody = world.getBody('projectile');
       expect(updatedBody!.position.x).toBeGreaterThan(0); // 水平移动
-      expect(updatedBody!.position.y).toBeLessThan(10); // 垂直下落
+      // 重力方向 y 为正（向下），所以位置应该增加（下落）
+      expect(updatedBody!.position.y).toBeGreaterThan(10); // 垂直下落
     });
   });
 
