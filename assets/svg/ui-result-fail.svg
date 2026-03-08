@@ -1,0 +1,86 @@
+<!-- 
+  UI 界面 - 结算界面（失败）
+  尺寸：750x1334px
+  用途：关卡失败结算
+-->
+<svg viewBox="0 0 750 1334" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="failBG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#D3D3D3;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#E0E0E0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F5F5F5;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="750" height="1334" fill="url(#failBG)"/>
+  
+  <!-- 标题文字 -->
+  <g transform="translate(375, 200)">
+    <text x="0" y="0" font-family="Arial Rounded MT Bold, sans-serif" font-size="72" font-weight="bold" fill="#8B4513" text-anchor="middle">再接再厉!</text>
+  </g>
+  
+  <!-- 失败表情主角 -->
+  <g transform="translate(275, 350)">
+    <circle cx="100" cy="100" r="100" fill="#FFD700" stroke="#8B4513" stroke-width="4"/>
+    
+    <!-- 难过的眉毛 -->
+    <path d="M 50 55 Q 65 65 80 55" stroke="#8B4513" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M 120 55 Q 135 65 150 55" stroke="#8B4513" stroke-width="4" fill="none" stroke-linecap="round"/>
+    
+    <!-- 眼睛 -->
+    <ellipse cx="65" cy="85" rx="20" ry="25" fill="#FFFFFF" stroke="#8B4513" stroke-width="3"/>
+    <ellipse cx="135" cy="85" rx="20" ry="25" fill="#FFFFFF" stroke="#8B4513" stroke-width="3"/>
+    <circle cx="65" cy="90" r="10" fill="#000000"/>
+    <circle cx="135" cy="90" r="10" fill="#000000"/>
+    <circle cx="68" cy="87" r="4" fill="#FFFFFF"/>
+    <circle cx="138" cy="87" r="4" fill="#FFFFFF"/>
+    
+    <!-- 泪滴 -->
+    <path d="M 55 110 Q 50 125 55 135 Q 60 125 55 110" fill="#87CEEB" stroke="#8B4513" stroke-width="2"/>
+    
+    <!-- 难过嘴巴 -->
+    <path d="M 60 140 Q 100 120 140 140" stroke="#8B4513" stroke-width="4" fill="none" stroke-linecap="round"/>
+    
+    <!-- 腮红（淡化） -->
+    <circle cx="35" cy="110" r="12" fill="#FFB6C1" opacity="0.4"/>
+    <circle cx="165" cy="110" r="12" fill="#FFB6C1" opacity="0.4"/>
+    
+    <!-- 高光 -->
+    <ellipse cx="70" cy="50" rx="25" ry="15" fill="#FFFFFF" opacity="0.3"/>
+  </g>
+  
+  <!-- 提示面板 -->
+  <g transform="translate(75, 600)">
+    <rect x="0" y="0" width="600" height="200" rx="30" fill="#FFFFFF" stroke="#8B4513" stroke-width="4"/>
+    
+    <!-- 提示图标 -->
+    <g transform="translate(50, 50)">
+      <circle cx="40" cy="40" r="35" fill="#FFA500" stroke="#8B4513" stroke-width="3"/>
+      <text x="40" y="52" font-family="Arial Rounded MT Bold, sans-serif" font-size="48" font-weight="bold" fill="#FFFFFF" text-anchor="middle">!</text>
+    </g>
+    
+    <!-- 提示文字 -->
+    <text x="150" y="70" font-family="Arial Rounded MT Bold, sans-serif" font-size="32" font-weight="bold" fill="#8B4513">小提示</text>
+    <text x="150" y="120" font-family="Arial Rounded MT Bold, sans-serif" font-size="24" fill="#555555">• 注意物理轨迹的预判</text>
+    <text x="150" y="160" font-family="Arial Rounded MT Bold, sans-serif" font-size="24" fill="#555555">• 收集所有星星可获得更高分数</text>
+  </g>
+  
+  <!-- 按钮组 -->
+  <!-- 重试按钮 -->
+  <g transform="translate(175, 850)">
+    <rect x="0" y="0" width="400" height="90" rx="25" fill="#FFA500" stroke="#8B4513" stroke-width="4"/>
+    <text x="200" y="58" font-family="Arial Rounded MT Bold, sans-serif" font-size="40" font-weight="bold" fill="#FFFFFF" text-anchor="middle">再试一次</text>
+  </g>
+  
+  <!-- 返回按钮 -->
+  <g transform="translate(175, 970)">
+    <rect x="0" y="0" width="400" height="70" rx="20" fill="#FFFFFF" stroke="#8B4513" stroke-width="3"/>
+    <text x="200" y="48" font-family="Arial Rounded MT Bold, sans-serif" font-size="32" font-weight="bold" fill="#8B4513" text-anchor="middle">返回关卡</text>
+  </g>
+  
+  <!-- 鼓励文字 -->
+  <g transform="translate(375, 1100)">
+    <text x="0" y="0" font-family="Arial Rounded MT Bold, sans-serif" font-size="28" fill="#8B4513" text-anchor="middle">别灰心，你一定能行！💪</text>
+  </g>
+</svg>

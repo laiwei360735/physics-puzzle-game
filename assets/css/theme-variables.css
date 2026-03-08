@@ -1,0 +1,170 @@
+/**
+ * 物理益智小游戏 - 主题变量
+ * 版本：v1.0
+ * 更新日期：2026-03-08
+ */
+
+:root {
+  /* ============================================
+     主色调
+     ============================================ */
+  
+  --color-sky-blue: #87CEEB;
+  --color-grass-green: #90EE90;
+  --color-sun-yellow: #FFD700;
+  --color-warm-orange: #FFA500;
+  --color-cloud-white: #F0F8FF;
+  
+  /* ============================================
+     辅助色
+     ============================================ */
+  
+  --color-soft-pink: #FFB6C1;
+  --color-mint-green: #98FF98;
+  --color-light-purple: #E6E6FA;
+  --color-dark-brown: #8B4513;
+  --color-deep-green: #228B22;
+  --color-bright-green: #3CB371;
+  
+  /* ============================================
+     中性色
+     ============================================ */
+  
+  --color-white: #FFFFFF;
+  --color-light-gray: #D3D3D3;
+  --color-medium-gray: #A9A9A9;
+  --color-dark-gray: #666666;
+  --color-text-primary: #555555;
+  --color-text-secondary: #888888;
+  
+  /* ============================================
+     渐变色定义
+     ============================================ */
+  
+  --gradient-sky: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #F0F8FF 100%);
+  --gradient-grass: linear-gradient(180deg, #90EE90 0%, #3CB371 100%);
+  --gradient-button: linear-gradient(180deg, #FFA500 0%, #FF8C00 100%);
+  --gradient-star: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  --gradient-heart: linear-gradient(135deg, #FFB6C1 0%, #FF69B4 100%);
+  --gradient-bubble: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%);
+  --gradient-panel: linear-gradient(135deg, #FFFFFF 0%, #F0F8FF 100%);
+  --gradient-success: linear-gradient(180deg, #90EE90 0%, #98FB98 50%, #F0FFF0 100%);
+  --gradient-fail: linear-gradient(180deg, #D3D3D3 0%, #E0E0E0 50%, #F5F5F5 100%);
+  
+  /* ============================================
+     边框样式
+     ============================================ */
+  
+  --border-color: #8B4513;
+  --border-width-thin: 2px;
+  --border-width-normal: 3px;
+  --border-width-thick: 4px;
+  --border-radius-small: 8px;
+  --border-radius-medium: 15px;
+  --border-radius-large: 20px;
+  --border-radius-xl: 25px;
+  --border-radius-round: 50%;
+  
+  /* ============================================
+     阴影效果
+     ============================================ */
+  
+  --shadow-light: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.15);
+  --shadow-heavy: 0 8px 16px rgba(0, 0, 0, 0.2);
+  --shadow-button: 0 4px 0 #8B4513;
+  --shadow-button-hover: 0 6px 0 #8B4513;
+  --shadow-button-active: 0 0 0 #8B4513;
+  --shadow-glow: 0 0 20px rgba(255, 215, 0, 0.6);
+  
+  /* ============================================
+     动画时长
+     ============================================ */
+  
+  --anim-fast: 0.15s;
+  --anim-normal: 0.3s;
+  --anim-slow: 0.5s;
+  --anim-very-slow: 0.8s;
+  
+  /* ============================================
+     缓动函数
+     ============================================ */
+  
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bouncy: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --ease-in-out: cubic-bezier(0.42, 0, 0.58, 1);
+  
+  /* ============================================
+     字体设置
+     ============================================ */
+  
+  --font-family-title: 'Fredoka One', 'Arial Rounded MT Bold', sans-serif;
+  --font-family-body: 'Varela Round', 'Nunito', 'Microsoft YaHei', sans-serif;
+  --font-family-number: 'Quicksand', 'Verdana', sans-serif;
+  --font-family-button: 'Arial Rounded MT Bold', sans-serif;
+  
+  /* ============================================
+     字号规范
+     ============================================ */
+  
+  --font-size-xs: 14px;
+  --font-size-sm: 18px;
+  --font-size-md: 24px;
+  --font-size-lg: 32px;
+  --font-size-xl: 36px;
+  --font-size-2xl: 48px;
+  --font-size-3xl: 60px;
+  --font-size-4xl: 72px;
+  
+  /* ============================================
+     间距规范
+     ============================================ */
+  
+  --spacing-xs: 8px;
+  --spacing-sm: 15px;
+  --spacing-md: 20px;
+  --spacing-lg: 30px;
+  --spacing-xl: 40px;
+  
+  /* ============================================
+     尺寸规范
+     ============================================ */
+  
+  --size-icon-sm: 48px;
+  --size-icon-md: 64px;
+  --size-icon-lg: 96px;
+  --size-button-primary-width: 200px;
+  --size-button-primary-height: 60px;
+  --size-button-secondary-width: 150px;
+  --size-button-secondary-height: 50px;
+  --size-level-card: 180px;
+  --size-character: 100px;
+  --size-item: 80px;
+  
+  /* ============================================
+     透明度
+     ============================================ */
+  
+  --opacity-high: 0.9;
+  --opacity-medium: 0.6;
+  --opacity-low: 0.3;
+  --opacity-highlight: 0.4;
+  
+  /* ============================================
+     Z 轴层级
+     ============================================ */
+  
+  --z-index-base: 1;
+  --z-index-ui: 100;
+  --z-index-modal: 1000;
+  --z-index-popup: 2000;
+  
+  /* ============================================
+     画布尺寸
+     ============================================ */
+  
+  --canvas-width: 750px;
+  --canvas-height: 1334px;
+  --canvas-aspect: 750/1334;
+}

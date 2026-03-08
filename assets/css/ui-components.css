@@ -1,0 +1,530 @@
+/**
+ * 物理益智小游戏 - UI 组件样式表
+ * 版本：v1.0
+ * 更新日期：2026-03-08
+ */
+
+/* ============================================
+   基础变量
+   ============================================ */
+
+:root {
+  /* 主色调 */
+  --color-sky-blue: #87CEEB;
+  --color-grass-green: #90EE90;
+  --color-sun-yellow: #FFD700;
+  --color-warm-orange: #FFA500;
+  --color-cloud-white: #F0F8FF;
+  
+  /* 辅助色 */
+  --color-soft-pink: #FFB6C1;
+  --color-mint-green: #98FF98;
+  --color-light-purple: #E6E6FA;
+  --color-dark-brown: #8B4513;
+  
+  /* 文字颜色 */
+  --text-primary: #555555;
+  --text-secondary: #888888;
+  --text-light: #FFFFFF;
+  
+  /* 边框 */
+  --border-color: #8B4513;
+  --border-width: 3px;
+  --border-radius: 15px;
+  
+  /* 阴影 */
+  --shadow-light: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.15);
+  --shadow-heavy: 0 8px 16px rgba(0, 0, 0, 0.2);
+  --shadow-button: 0 4px 0 #8B4513;
+}
+
+/* ============================================
+   按钮组件
+   ============================================ */
+
+/* 主按钮 */
+.btn-primary {
+  background: linear-gradient(180deg, var(--color-warm-orange) 0%, #FF8C00 100%);
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 15px 40px;
+  color: var(--text-light);
+  font-family: 'Arial Rounded MT Bold', sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  box-shadow: var(--shadow-button);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  min-width: 200px;
+  text-align: center;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #8B4513;
+}
+
+.btn-primary:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 #8B4513;
+}
+
+.btn-primary:disabled {
+  background: linear-gradient(180deg, #D3D3D3 0%, #A9A9A9 100%);
+  box-shadow: 0 4px 0 #666666;
+  cursor: not-allowed;
+}
+
+/* 次按钮 */
+.btn-secondary {
+  background: #FFFFFF;
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 12px 30px;
+  color: var(--dark-brown);
+  font-family: 'Arial Rounded MT Bold', sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  box-shadow: var(--shadow-medium);
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--color-cloud-white);
+  transform: translateY(-2px);
+}
+
+.btn-secondary:active {
+  transform: translateY(2px);
+  box-shadow: var(--shadow-light);
+}
+
+/* 图标按钮 */
+.btn-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: var(--border-width) solid var(--border-color);
+  background: #FFFFFF;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-medium);
+  transition: all 0.1s ease;
+}
+
+.btn-icon:hover {
+  transform: scale(1.1);
+}
+
+.btn-icon:active {
+  transform: scale(0.95);
+}
+
+/* ============================================
+   面板组件
+   ============================================ */
+
+/* 游戏面板 */
+.panel-game {
+  background: rgba(255, 255, 255, 0.95);
+  border: 4px solid var(--border-color);
+  border-radius: 25px;
+  box-shadow: var(--shadow-heavy);
+  padding: 30px;
+  margin: 20px;
+}
+
+/* 信息面板 */
+.panel-info {
+  background: linear-gradient(135deg, #FFFFFF 0%, var(--color-cloud-white) 100%);
+  border: 3px solid var(--border-color);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow-medium);
+}
+
+/* 提示面板 */
+.panel-tip {
+  background: linear-gradient(135deg, var(--color-sun-yellow) 0%, #FFE4B5 100%);
+  border: 3px solid var(--border-color);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow-medium);
+}
+
+/* ============================================
+   文字样式
+   ============================================ */
+
+/* 大标题 */
+.text-title-large {
+  font-family: 'Fredoka One', 'Arial Rounded MT Bold', sans-serif;
+  font-size: 48px;
+  font-weight: bold;
+  color: var(--border-color);
+  text-shadow: 2px 2px 0 var(--color-cloud-white);
+}
+
+/* 小标题 */
+.text-title-small {
+  font-family: 'Fredoka One', 'Arial Rounded MT Bold', sans-serif;
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--border-color);
+}
+
+/* 正文 */
+.text-body {
+  font-family: 'Varela Round', 'Nunito', 'Microsoft YaHei', sans-serif;
+  font-size: 18px;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+/* 按钮文字 */
+.text-button {
+  font-family: 'Arial Rounded MT Bold', sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--text-light);
+}
+
+/* 得分数字 */
+.text-score {
+  font-family: 'Quicksand', 'Verdana', sans-serif;
+  font-size: 36px;
+  font-weight: bold;
+  color: var(--color-sun-yellow);
+  text-shadow: 2px 2px 0 var(--border-color);
+}
+
+/* ============================================
+   关卡卡片
+   ============================================ */
+
+.level-card {
+  width: 180px;
+  height: 180px;
+  border-radius: 20px;
+  border: 4px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+/* 已完成关卡 */
+.level-card.completed {
+  background: linear-gradient(180deg, var(--color-grass-green) 0%, #3CB371 100%);
+}
+
+/* 当前关卡 */
+.level-card.current {
+  background: linear-gradient(180deg, var(--color-warm-orange) 0%, #FF8C00 100%);
+  box-shadow: 0 0 20px var(--color-sun-yellow);
+}
+
+/* 未解锁关卡 */
+.level-card.locked {
+  background: linear-gradient(180deg, #D3D3D3 0%, #A9A9A9 100%);
+  cursor: not-allowed;
+}
+
+.level-card:hover:not(.locked) {
+  transform: scale(1.05);
+}
+
+.level-card:active:not(.locked) {
+  transform: scale(0.98);
+}
+
+.level-number {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 72px;
+  font-weight: bold;
+  color: var(--text-light);
+  text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+}
+
+.level-status {
+  font-family: 'Varela Round', sans-serif;
+  font-size: 16px;
+  color: var(--text-light);
+  margin-top: 10px;
+}
+
+/* 星星评价 */
+.stars-rating {
+  display: flex;
+  gap: 5px;
+  margin-top: 15px;
+}
+
+.star {
+  width: 24px;
+  height: 24px;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  background: var(--color-sun-yellow);
+}
+
+.star.empty {
+  background: #D3D3D3;
+}
+
+/* 锁图标 */
+.lock-icon {
+  width: 40px;
+  height: 50px;
+  background: var(--border-color);
+  border-radius: 8px;
+  position: relative;
+  margin-top: 20px;
+}
+
+.lock-icon::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 10px;
+  width: 20px;
+  height: 20px;
+  border: 4px solid var(--border-color);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+}
+
+/* ============================================
+   进度条
+   ============================================ */
+
+.progress-bar {
+  width: 100%;
+  height: 30px;
+  background: #E0E0E0;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 3px solid var(--border-color);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-grass-green) 0%, #3CB371 100%);
+  border-radius: 12px;
+  transition: width 0.5s var(--ease-smooth);
+}
+
+.progress-text {
+  font-family: 'Quicksand', sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--border-color);
+  text-align: right;
+  margin-top: 8px;
+}
+
+/* ============================================
+   道具图标
+   ============================================ */
+
+.item-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  border: 3px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFFFFF;
+  box-shadow: var(--shadow-light);
+}
+
+.item-star {
+  background: linear-gradient(135deg, var(--color-sun-yellow) 0%, var(--color-warm-orange) 100%);
+}
+
+.item-heart {
+  background: linear-gradient(135deg, var(--color-soft-pink) 0%, #FF69B4 100%);
+}
+
+.item-bubble {
+  background: linear-gradient(135deg, var(--color-sky-blue) 0%, #B0E0E6 100%);
+}
+
+/* ============================================
+   导航栏
+   ============================================ */
+
+.nav-bar {
+  height: 80px;
+  background: var(--color-sky-blue);
+  border-bottom: 4px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+  box-shadow: var(--shadow-medium);
+}
+
+.nav-title {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 36px;
+  font-weight: bold;
+  color: var(--text-light);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.nav-back {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 3px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.nav-back:hover {
+  transform: scale(1.1);
+}
+
+.nav-back:active {
+  transform: scale(0.95);
+}
+
+/* ============================================
+   弹窗
+   ============================================ */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #FFFFFF;
+  border: 5px solid var(--border-color);
+  border-radius: 30px;
+  padding: 40px;
+  max-width: 500px;
+  box-shadow: var(--shadow-heavy);
+  animation: pop-in 0.3s var(--ease-bouncy);
+}
+
+.modal-title {
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 36px;
+  font-weight: bold;
+  color: var(--border-color);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.modal-body {
+  font-family: 'Varela Round', sans-serif;
+  font-size: 18px;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 30px;
+  line-height: 1.8;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* ============================================
+   背景装饰
+   ============================================ */
+
+.bg-sky {
+  background: linear-gradient(180deg, var(--color-sky-blue) 0%, #B0E0E6 50%, var(--color-cloud-white) 100%);
+}
+
+.bg-grass {
+  background: linear-gradient(180deg, var(--color-grass-green) 0%, #3CB371 100%);
+}
+
+/* 云朵装饰 */
+.cloud-decoration {
+  position: absolute;
+  background: #FFFFFF;
+  border-radius: 50%;
+  opacity: 0.8;
+}
+
+.cloud-decoration::before,
+.cloud-decoration::after {
+  content: '';
+  position: absolute;
+  background: #FFFFFF;
+  border-radius: 50%;
+}
+
+/* ============================================
+   响应式适配
+   ============================================ */
+
+@media (max-width: 768px) {
+  .btn-primary {
+    padding: 12px 30px;
+    font-size: 20px;
+    min-width: 160px;
+  }
+  
+  .text-title-large {
+    font-size: 36px;
+  }
+  
+  .text-title-small {
+    font-size: 28px;
+  }
+  
+  .level-card {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .level-number {
+    font-size: 56px;
+  }
+}
+
+/* ============================================
+   动画缓动函数
+   ============================================ */
+
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+:root {
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bouncy: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}

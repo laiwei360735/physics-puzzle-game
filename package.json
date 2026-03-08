@@ -1,0 +1,33 @@
+{
+  "name": "physics-puzzle-game",
+  "version": "1.0.0",
+  "description": "物理益智微信小游戏 - Physics Puzzle WeChat Mini Game",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "build:wechat": "vite build --mode wechat"
+  },
+  "dependencies": {
+    "phaser": "^3.80.1",
+    "matter-js": "^0.19.0"
+  },
+  "devDependencies": {
+    "@types/matter-js": "^0.19.7",
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0",
+    "vite-plugin-wx-mini-game": "^1.0.0"
+  },
+  "keywords": [
+    "phaser",
+    "matter-js",
+    "wechat",
+    "mini-game",
+    "physics",
+    "puzzle"
+  ],
+  "author": "",
+  "license": "MIT"
+}

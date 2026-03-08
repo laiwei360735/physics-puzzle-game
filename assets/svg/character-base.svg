@@ -1,0 +1,47 @@
+<!-- 
+  主角角色 - 基础表情
+  尺寸：100x100px
+  用途：游戏主角默认状态
+-->
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 身体渐变 -->
+    <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 眼睛高光 -->
+    <radialGradient id="eyeHighlight" cx="30%" cy="30%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- 身体 -->
+  <circle cx="50" cy="50" r="45" fill="url(#bodyGradient)" stroke="#8B4513" stroke-width="3"/>
+  
+  <!-- 左眼白 -->
+  <ellipse cx="35" cy="40" rx="8" ry="10" fill="#FFFFFF" stroke="#8B4513" stroke-width="2"/>
+  <!-- 右眼白 -->
+  <ellipse cx="65" cy="40" rx="8" ry="10" fill="#FFFFFF" stroke="#8B4513" stroke-width="2"/>
+  
+  <!-- 左眼珠 -->
+  <circle cx="37" cy="42" r="4" fill="#000000"/>
+  <circle cx="38" cy="41" r="1.5" fill="url(#eyeHighlight)"/>
+  
+  <!-- 右眼珠 -->
+  <circle cx="67" cy="42" r="4" fill="#000000"/>
+  <circle cx="68" cy="41" r="1.5" fill="url(#eyeHighlight)"/>
+  
+  <!-- 左腮红 -->
+  <circle cx="25" cy="55" r="6" fill="#FFB6C1" opacity="0.6"/>
+  <!-- 右腮红 -->
+  <circle cx="75" cy="55" r="6" fill="#FFB6C1" opacity="0.6"/>
+  
+  <!-- 嘴巴（微笑） -->
+  <path d="M 35 60 Q 50 70 65 60" stroke="#8B4513" stroke-width="3" fill="none" stroke-linecap="round"/>
+  
+  <!-- 高光 -->
+  <ellipse cx="35" cy="25" rx="8" ry="5" fill="#FFFFFF" opacity="0.4"/>
+</svg>

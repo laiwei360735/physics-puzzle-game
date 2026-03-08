@@ -1,0 +1,62 @@
+<!-- 
+  背景元素 - 太阳
+  尺寸：120x120px
+  用途：天空背景、光源
+-->
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 太阳核心渐变 -->
+    <radialGradient id="sunCore" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFFE0;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#FFA500;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF8C00;stop-opacity:1" />
+    </radialGradient>
+    
+    <!-- 光芒渐变 -->
+    <linearGradient id="sunRay" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#FFA500;stop-opacity:0" />
+    </linearGradient>
+    
+    <!-- 发光效果 -->
+    <filter id="sunGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- 太阳光芒（12 条） -->
+  <g filter="url(#sunGlow)">
+    <!-- 主方向光芒 -->
+    <polygon points="60,10 65,30 55,30" fill="url(#sunRay)"/>
+    <polygon points="60,110 65,90 55,90" fill="url(#sunRay)"/>
+    <polygon points="10,60 30,55 30,65" fill="url(#sunRay)"/>
+    <polygon points="110,60 90,55 90,65" fill="url(#sunRay)"/>
+    
+    <!-- 斜向光芒 -->
+    <polygon points="25,25 40,38 35,43" fill="url(#sunRay)"/>
+    <polygon points="95,25 80,38 85,43" fill="url(#sunRay)"/>
+    <polygon points="25,95 40,82 35,77" fill="url(#sunRay)"/>
+    <polygon points="95,95 80,82 85,77" fill="url(#sunRay)"/>
+    
+    <!-- 次要光芒 -->
+    <polygon points="60,15 63,28 57,28" fill="url(#sunRay)" opacity="0.6"/>
+    <polygon points="60,105 63,92 57,92" fill="url(#sunRay)" opacity="0.6"/>
+    <polygon points="15,60 28,57 28,63" fill="url(#sunRay)" opacity="0.6"/>
+    <polygon points="105,60 92,57 92,63" fill="url(#sunRay)" opacity="0.6"/>
+  </g>
+  
+  <!-- 太阳核心 -->
+  <circle cx="60" cy="60" r="25" fill="url(#sunCore)" stroke="#FFA500" stroke-width="2"/>
+  
+  <!-- 核心高光 -->
+  <circle cx="52" cy="52" r="8" fill="#FFFFFF" opacity="0.4"/>
+  
+  <!-- 光晕 -->
+  <circle cx="60" cy="60" r="35" fill="#FFD700" opacity="0.2"/>
+  <circle cx="60" cy="60" r="45" fill="#FFA500" opacity="0.1"/>
+</svg>

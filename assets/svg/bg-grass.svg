@@ -1,0 +1,108 @@
+<!-- 
+  背景元素 - 草地
+  尺寸：400x150px
+  用途：地面、平台
+-->
+<svg viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- 草地渐变 -->
+    <linearGradient id="grassGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#90EE90;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#3CB371;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#228B22;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- 土壤渐变 -->
+    <linearGradient id="dirtGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B4513;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#654321;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 土壤层 -->
+  <rect x="0" y="100" width="400" height="50" fill="url(#dirtGradient)"/>
+  
+  <!-- 草地主体 -->
+  <path 
+    d="M 0 100 
+       Q 20 90 40 100 
+       Q 60 110 80 100 
+       Q 100 90 120 100 
+       Q 140 110 160 100 
+       Q 180 90 200 100 
+       Q 220 110 240 100 
+       Q 260 90 280 100 
+       Q 300 110 320 100 
+       Q 340 90 360 100 
+       Q 380 110 400 100 
+       L 400 150 L 0 150 Z"
+    fill="url(#grassGradient)"
+  />
+  
+  <!-- 草叶细节 -->
+  <g stroke="#228B22" stroke-width="2" fill="none" stroke-linecap="round">
+    <!-- 左侧草叶 -->
+    <path d="M 20 100 Q 15 85 20 75"/>
+    <path d="M 25 100 Q 22 88 25 78"/>
+    <path d="M 30 100 Q 28 86 25 76"/>
+    
+    <!-- 中间草叶 -->
+    <path d="M 100 100 Q 95 82 100 70"/>
+    <path d="M 105 100 Q 102 85 105 73"/>
+    <path d="M 110 100 Q 108 83 110 72"/>
+    <path d="M 115 100 Q 112 86 115 75"/>
+    
+    <!-- 右侧草叶 -->
+    <path d="M 200 100 Q 195 80 200 68"/>
+    <path d="M 205 100 Q 202 83 205 71"/>
+    <path d="M 210 100 Q 208 81 210 69"/>
+    
+    <!-- 远侧草叶 -->
+    <path d="M 300 100 Q 295 85 300 75"/>
+    <path d="M 305 100 Q 302 87 305 76"/>
+    <path d="M 310 100 Q 308 84 310 74"/>
+    
+    <!-- 边缘草叶 -->
+    <path d="M 380 100 Q 375 88 380 78"/>
+    <path d="M 385 100 Q 382 86 385 76"/>
+    <path d="M 390 100 Q 388 87 390 77"/>
+  </g>
+  
+  <!-- 小花装饰 -->
+  <g>
+    <!-- 花朵 1 -->
+    <circle cx="60" cy="95" r="4" fill="#FFB6C1"/>
+    <circle cx="56" cy="93" r="2" fill="#FFFFFF" opacity="0.5"/>
+    
+    <!-- 花朵 2 -->
+    <circle cx="150" cy="98" r="4" fill="#FFD700"/>
+    <circle cx="148" cy="96" r="2" fill="#FFFFFF" opacity="0.5"/>
+    
+    <!-- 花朵 3 -->
+    <circle cx="250" cy="96" r="4" fill="#FFB6C1"/>
+    <circle cx="248" cy="94" r="2" fill="#FFFFFF" opacity="0.5"/>
+    
+    <!-- 花朵 4 -->
+    <circle cx="350" cy="97" r="4" fill="#FFD700"/>
+    <circle cx="348" cy="95" r="2" fill="#FFFFFF" opacity="0.5"/>
+  </g>
+  
+  <!-- 顶部高光 -->
+  <path 
+    d="M 0 100 
+       Q 20 90 40 100 
+       Q 60 110 80 100 
+       Q 100 90 120 100 
+       Q 140 110 160 100 
+       Q 180 90 200 100 
+       Q 220 110 240 100 
+       Q 260 90 280 100 
+       Q 300 110 320 100 
+       Q 340 90 360 100 
+       Q 380 110 400 100"
+    stroke="#90EE90"
+    stroke-width="3"
+    fill="none"
+    opacity="0.5"
+  />
+</svg>
