@@ -1292,7 +1292,7 @@ export class LevelManager {
   /**
    * 保存进度（本地存储）- 添加异常处理
    */
-  saveProgress(): void {
+  private saveProgress(): void {
     try {
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem('unlockedLevels', this.unlockedLevels.toString());
@@ -1354,19 +1354,6 @@ export class LevelManager {
     }
   }
 
-  /**
-   * 保存星级进度到 localStorage
-   */
-  private saveProgress(): void {
-    try {
-      // Map 转 Object 以便 JSON 序列化
-      const data = Object.fromEntries(this.starProgress);
-      localStorage.setItem('physics-puzzle-star-progress', JSON.stringify(data));
-    } catch (error) {
-      console.error('保存进度失败:', error);
-    }
-  }
-
   saveStarProgress(levelId: number, stars: number, score: number, collectedStars: number, moves: number): void {
     try {
       const existing = this.starProgress.get(levelId);
@@ -1388,7 +1375,19 @@ export class LevelManager {
       }
 
       this.starProgress.set(levelId, newProgress);
-      this.saveProgress();
+      this.saveStarProgressData();
+    } catch (error) {
+      console.error('保存星级进度失败:', error);
+    }
+  }
+
+  /**
+   * 保存星级进度到 localStorage
+   */
+  private saveStarProgressData(): void {
+    try {
+      const data = Object.fromEntries(this.starProgress);
+      localStorage.setItem('physics-puzzle-star-progress', JSON.stringify(data));
     } catch (error) {
       console.error('保存星级进度失败:', error);
     }
