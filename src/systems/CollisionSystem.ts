@@ -30,7 +30,15 @@ export class CollisionSystem {
    * 获取 Matter.js 物理实例
    */
   private getMatterPhysics(): any {
-    return (this.scene.physics as any);
+    const scene = this.scene as any;
+    if (scene.matter) {
+      return scene.matter;
+    }
+    if (scene.physics && scene.physics.matter) {
+      return scene.physics.matter;
+    }
+    console.error('❌ Matter.js 未初始化');
+    return null;
   }
 
   /**

@@ -66,7 +66,7 @@ export class GameScene extends Phaser.Scene {
     super({
       key: 'GameScene',
       physics: {
-        default: 'matter',
+        default: 'matter' as const,
         matter: {
           gravity: { y: 1 },
         }

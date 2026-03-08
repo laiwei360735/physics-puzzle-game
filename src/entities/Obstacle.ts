@@ -46,7 +46,15 @@ export class Obstacle extends Phaser.GameObjects.Container {
    * 获取 Matter.js 物理实例
    */
   protected getMatterPhysics(): any {
-    return (this.scene.physics as any);
+    const scene = this.scene as any;
+    if (scene.matter) {
+      return scene.matter;
+    }
+    if (scene.physics && scene.physics.matter) {
+      return scene.physics.matter;
+    }
+    console.error('❌ Matter.js 未初始化');
+    return null;
   }
 
   /**
