@@ -57,29 +57,20 @@ export class BootScene extends Phaser.Scene {
   create(): void {
     console.log('✅ BootScene 创建，准备进入 MenuScene');
     
-    // 延迟进入菜单，确保资源完全加载
-    this.time.delayedCall(100, () => {
-      try {
-        // 隐藏加载界面
-        const loadingEl = document.getElementById('loading');
-        if (loadingEl) {
-          loadingEl.classList.add('hidden');
-        }
-        
-        // 调用全局函数（如果存在）
-        if (typeof (window as any).hideLoading === 'function') {
-          (window as any).hideLoading();
-        }
-        
-        // 进入菜单场景
-        this.scene.start('MenuScene');
-        console.log('✅ 成功进入 MenuScene');
-      } catch (error) {
-        console.error('❌ 场景切换失败:', error);
-        // 强制进入菜单
-        this.scene.start('MenuScene');
-      }
-    });
+    // 隐藏加载界面
+    const loadingEl = document.getElementById('loading');
+    if (loadingEl) {
+      loadingEl.classList.add('hidden');
+    }
+    
+    // 调用全局函数（如果存在）
+    if (typeof (window as any).hideLoading === 'function') {
+      (window as any).hideLoading();
+    }
+    
+    // 直接进入菜单场景（不需要延迟）
+    console.log('🚀 切换到 MenuScene');
+    this.scene.start('MenuScene');
   }
 
   /**
