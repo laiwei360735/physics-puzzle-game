@@ -83,18 +83,21 @@ export class GameScene extends Phaser.Scene {
     this.vfxManager = new VfxManager(this);
     this.tutorialManager = new TutorialManager(this);
     
-    // 设置 Matter.js 配置 - 使用正确的 API
-    const matterWorld = (this as any).matter?.world;
-    if (matterWorld) {
-      matterWorld.setBounds(0, 0, width, height);
-      // 设置重力 - 使用 matter.world.gravity
-      matterWorld.gravity.y = 1;
+    // 设置 Matter.js 配置 - 使用 Phaser 的 Matter.js 封装 API
+    const matter = (this as any).matter;
+    if (matter && matter.world) {
+      matter.world.setBounds(0, 0, width, height);
+      // 设置重力 - 使用 Phaser 的 setGravity 方法
+      if (matter.setGravity) {
+        matter.setGravity(0, 1);
+      } else if (matter.world.gravity) {
+        matter.world.gravity.y = 1;
+      }
       console.log('✅ Matter.js 初始化成功');
     } else {
       console.error('❌ Matter.js 未启用，检查游戏配置');
       console.log('this:', this);
-      console.log('this.matter:', (this as any).matter);
-      console.log('this.physics:', (this as any).physics);
+      console.log('this.matter:', matter);
     }
 
     // 加载关卡
