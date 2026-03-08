@@ -50,8 +50,8 @@ export class Player extends Phaser.GameObjects.Container {
     
     this.add(graphics);
 
-    // 设置物理属性
-    matter.setGameObject(this, this.body);
+    // Phaser 3 中不需要显式调用 setGameObject
+    // body 会自动关联到这个 GameObject
   }
 
   /**
