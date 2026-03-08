@@ -43,17 +43,6 @@ export class InputManager {
   /**
    * 获取 Matter.js 物理实例
    */
-  private getMatterPhysics(): any {
-    const scene = this.scene as any;
-    if (scene.matter) {
-      return scene.matter;
-    }
-    if (scene.physics && scene.physics.matter) {
-      return scene.physics.matter;
-    }
-    console.error('❌ Matter.js 未初始化');
-    return null;
-  }
 
   /**
    * 设置输入
@@ -134,7 +123,7 @@ export class InputManager {
    */
   private handlePointerDown(pointer: Phaser.Input.Pointer): void {
     // 获取点击位置的游戏对象
-    const objects = this.getMatterPhysics().world.getObjectsAt(pointer.x, pointer.y);
+    const objects = (this.scene as any).matter.world.getObjectsAt(pointer.x, pointer.y);
     
     if (objects.length > 0) {
       const gameObject = objects[0].gameObject as Phaser.GameObjects.GameObject;

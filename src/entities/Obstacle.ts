@@ -219,12 +219,12 @@ export class Obstacle extends Phaser.GameObjects.Container {
     const offset = Math.sin(time * 0.001 * speed) * range;
     
     if (axis === 'x') {
-      this.getMatterPhysics().setPosition(this.body, {
+      Matter.Body.setPosition(this.body, {
         x: this.config.x + offset,
         y: this.config.y,
       });
     } else {
-      this.getMatterPhysics().setPosition(this.body, {
+      Matter.Body.setPosition(this.body, {
         x: this.config.x,
         y: this.config.y + offset,
       });
@@ -237,7 +237,7 @@ export class Obstacle extends Phaser.GameObjects.Container {
   protected updateRotating(delta: number, speed: number): void {
     if (speed !== 0) {
       const rotation = this.body.angle + speed * delta * 0.001;
-      this.getMatterPhysics().setRotation(this.body, rotation);
+      Matter.Body.setAngle(this.body, rotation);
     }
   }
 

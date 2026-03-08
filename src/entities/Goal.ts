@@ -26,25 +26,11 @@ export class Goal extends Phaser.GameObjects.Container {
   }
 
   /**
-   * 获取 Matter.js 物理实例
-   */
-  private getMatterPhysics(): any {
-    const scene = this.scene as any;
-    if (scene.matter) {
-      return scene.matter;
-    }
-    if (scene.physics && scene.physics.matter) {
-      return scene.physics.matter;
-    }
-    console.error('❌ Matter.js 未初始化');
-    return null;
-  }
-
-  /**
    * 创建目标
    */
   private createGoal(): void {
     const { radius = 30, color = 0x00ff00, type = 'normal' } = this.config;
+    const scene = this.scene as any;
 
     // 创建发光效果
     this.glowEffect = this.scene.add.graphics();
@@ -67,14 +53,14 @@ export class Goal extends Phaser.GameObjects.Container {
         break;
     }
 
-    // 创建物理身体（传感器）
-    this.body = this.getMatterPhysics().add.circle(this.x, this.y, radius, {
+    // 创建物理身体（传感器）- 使用 scene.matter
+    this.body = scene.matter.add.circle(this.x, this.y, radius, {
       isSensor: true,
       label: 'goal',
     });
 
     // 关联游戏对象
-    this.getMatterPhysics().setGameObject(this, this.body);
+    scene.matter.setGameObject(this, this.body);
   }
 
   /**

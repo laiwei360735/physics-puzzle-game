@@ -57,17 +57,6 @@ export class StarCollector {
   /**
    * 获取 Matter.js 物理实例
    */
-  private getMatterPhysics(): any {
-    const scene = this.scene as any;
-    if (scene.matter) {
-      return scene.matter;
-    }
-    if (scene.physics && scene.physics.matter) {
-      return scene.physics.matter;
-    }
-    console.error('❌ Matter.js 未初始化');
-    return null;
-  }
 
   /**
    * 添加星星到关卡
@@ -100,7 +89,7 @@ export class StarCollector {
     });
 
     // 创建物理 body（用于碰撞检测）
-    const starBody = this.getMatterPhysics().bodies.circle(x, y, radius, {
+    const starBody = (this.scene as any).matter.bodies.circle(x, y, radius, {
       isSensor: true, // 传感器，不产生物理碰撞
       label: 'star',
     });

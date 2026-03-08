@@ -29,23 +29,12 @@ export class CollisionSystem {
   /**
    * 获取 Matter.js 物理实例
    */
-  private getMatterPhysics(): any {
-    const scene = this.scene as any;
-    if (scene.matter) {
-      return scene.matter;
-    }
-    if (scene.physics && scene.physics.matter) {
-      return scene.physics.matter;
-    }
-    console.error('❌ Matter.js 未初始化');
-    return null;
-  }
 
   /**
    * 设置碰撞事件
    */
   private setupCollisionEvents(): void {
-    const matterWorld = this.getMatterPhysics().world;
+    const matterWorld = (this.scene as any).matter.world;
 
     // 碰撞开始 - 保存监听器引用
     this.collisionStartListener = (event: Matter.Types.CollisionStartEvent) => {
@@ -221,7 +210,7 @@ export class CollisionSystem {
    * 清理所有资源 - 修复内存泄漏
    */
   destroy(): void {
-    const matterWorld = this.getMatterPhysics().world;
+    const matterWorld = (this.scene as any).matter.world;
 
     // 移除所有事件监听器
     if (this.collisionStartListener) {
