@@ -27,8 +27,16 @@ export class Player extends Phaser.GameObjects.Container {
     // 创建圆形身体
     const radius = 25;
     
-    const matterPhysics = (this.scene.physics as any);
-    this.body = matterPhysics.add.circle(this.x, this.y, radius, {
+    // 使用 scene.matter 而不是 scene.physics
+    const scene = this.scene as any;
+    const matter = scene.matter;
+    
+    if (!matter) {
+      console.error('❌ Player 创建失败：Matter.js 未初始化');
+      return;
+    }
+    
+    this.body = matter.add.circle(this.x, this.y, radius, {
       density: 0.001,
       friction: 0.1,
       restitution: 0.5, // 弹性
@@ -43,7 +51,7 @@ export class Player extends Phaser.GameObjects.Container {
     this.add(graphics);
 
     // 设置物理属性
-    matterPhysics.setGameObject(this, this.body);
+    matter.setGameObject(this, this.body);
   }
 
   /**
@@ -76,6 +84,7 @@ export class Player extends Phaser.GameObjects.Container {
    * 应用物理
    */
   private applyPhysics(delta: number): void {
+    if (!this.body) return;
     // 限制最大速度
     const velocity = this.body.velocity;
     const speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
@@ -93,6 +102,7 @@ export class Player extends Phaser.GameObjects.Container {
    * 开始拖拽
    */
   startDrag(pointer: Phaser.Input.Pointer): void {
+    if (!this.body) return;
     this.isDragging = true;
     
     // 创建拖拽约束 - 使用 Phaser 的 Matter.js 封装
@@ -141,6 +151,7 @@ export class Player extends Phaser.GameObjects.Container {
    * 施加力
    */
   applyForce(x: number, y: number): void {
+    if (!this.body) return;
     Matter.Body.applyForce(this.body, this.body.position, { x, y });
   }
 
@@ -148,6 +159,7 @@ export class Player extends Phaser.GameObjects.Container {
    * 跳跃
    */
   jump(): void {
+    if (!this.body) return;
     if (this.isOnGround()) {
       Matter.Body.applyForce(this.body, this.body.position, {
         x: 0,
@@ -175,6 +187,11 @@ export class Player extends Phaser.GameObjects.Container {
    * 设置玩家位置
    */
   setPosition(x: number, y: number): void {
+    // 添加 null 检查
+    if (!this.body) {
+      console.error('❌ Player.body is null');
+      return;
+    }
     // 直接使用 Matter.js 原生 API
     Matter.Body.setPosition(this.body, { x, y });
   }
@@ -183,6 +200,7 @@ export class Player extends Phaser.GameObjects.Container {
    * 重置玩家
    */
   reset(x: number, y: number): void {
+    if (!this.body) return;
     this.setPosition(x, y);
     Matter.Body.setVelocity(this.body, { x: 0, y: 0 });
     Matter.Body.setAngularVelocity(this.body, 0);
@@ -197,7 +215,9 @@ export class Player extends Phaser.GameObjects.Container {
       if (scene.matter && scene.matter.world) {
         scene.matter.world.removeConstraint(this.dragConstraint);
       }
+      this.dragConstraint = null;
     }
+    this.body = null as any;
     super.destroy(fromScene);
   }
 }
