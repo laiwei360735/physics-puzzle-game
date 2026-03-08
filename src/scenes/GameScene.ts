@@ -63,7 +63,15 @@ export class GameScene extends Phaser.Scene {
   private failReason: string = '';
 
   constructor() {
-    super({ key: 'GameScene' });
+    super({
+      key: 'GameScene',
+      physics: {
+        default: 'matter',
+        matter: {
+          gravity: { y: 1 },
+        }
+      }
+    });
   }
 
   init(data: { level: number }): void {
@@ -83,10 +91,10 @@ export class GameScene extends Phaser.Scene {
     this.vfxManager = new VfxManager(this);
     this.tutorialManager = new TutorialManager(this);
     
-    // 设置 Matter.js 配置
-    // 使用类型断言访问 Matter.js API
-    const matterPhysics = (this as any).matter;
-    if (matterPhysics) {
+    // 设置 Matter.js 配置 - 使用正确的 API
+    // 在 Scene 配置了 physics 后，this.physics 就是 Matter.js 的实例
+    const matterPhysics = (this.physics as any);
+    if (matterPhysics && matterPhysics.world) {
       matterPhysics.world.setBounds(0, 0, width, height);
       matterPhysics.setGravity(0, 1);
       console.log('✅ Matter.js 初始化成功');
