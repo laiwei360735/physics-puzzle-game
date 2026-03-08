@@ -1,6 +1,10 @@
 /**
  * 游戏状态管理系统
  * 管理游戏的整体状态和流程
+ * 
+ * 修复说明：
+ * - 添加 localStorage 操作的 try-catch 异常处理
+ * - 微信小游戏环境可能不支持 localStorage，需要优雅降级
  */
 
 import Phaser from 'phaser';
@@ -30,6 +34,7 @@ export class GameStateManager {
     stars: 0,
   };
   private stateHistory: GameState[] = [];
+  private levelStartTime: number = 0;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -110,7 +115,6 @@ export class GameStateManager {
    * 暂停处理
    */
   private onPause(): void {
-    // 显示暂停菜单
     console.log('游戏暂停');
   }
 
@@ -144,6 +148,7 @@ export class GameStateManager {
   startLevel(level: number): void {
     this.stats.level = level;
     this.stats.currentScore = 0;
+    this.levelStartTime = Date.now();
     this.setState('playing');
   }
 
@@ -233,34 +238,78 @@ export class GameStateManager {
   }
 
   /**
-   * 保存进度
+   * 获取关卡用时（秒）
+   */
+  getLevelTime(): number {
+    if (this.levelStartTime === 0) return 0;
+    return Math.floor((Date.now() - this.levelStartTime) / 1000);
+  }
+
+  /**
+   * 保存进度 - 添加异常处理
    */
   saveProgress(): void {
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('totalScore', this.stats.totalScore.toString());
-      localStorage.setItem('level', this.stats.level.toString());
-      localStorage.setItem('stars', this.stats.stars.toString());
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('totalScore', this.stats.totalScore.toString());
+        localStorage.setItem('level', this.stats.level.toString());
+        localStorage.setItem('stars', this.stats.stars.toString());
+        localStorage.setItem('gameStats', JSON.stringify(this.stats));
+      }
+    } catch (error) {
+      console.error('保存进度失败:', error);
+      // 微信小游戏环境可能不支持 localStorage，静默失败
+      // 可以考虑使用微信的云存储 API 作为备选
     }
   }
 
   /**
-   * 加载进度
+   * 加载进度 - 添加异常处理
    */
   loadProgress(): void {
-    if (typeof localStorage !== 'undefined') {
-      const totalScore = localStorage.getItem('totalScore');
-      const level = localStorage.getItem('level');
-      const stars = localStorage.getItem('stars');
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const totalScore = localStorage.getItem('totalScore');
+        const level = localStorage.getItem('level');
+        const stars = localStorage.getItem('stars');
+        const gameStatsData = localStorage.getItem('gameStats');
 
-      if (totalScore) {
-        this.stats.totalScore = parseInt(totalScore, 10);
+        if (totalScore) {
+          this.stats.totalScore = parseInt(totalScore, 10);
+        }
+        if (level) {
+          this.stats.level = parseInt(level, 10);
+        }
+        if (stars) {
+          this.stats.stars = parseInt(stars, 10);
+        }
+        if (gameStatsData) {
+          const parsedStats = JSON.parse(gameStatsData) as GameStats;
+          // 合并保存的统计数据
+          this.stats = { ...this.stats, ...parsedStats };
+        }
       }
-      if (level) {
-        this.stats.level = parseInt(level, 10);
+    } catch (error) {
+      console.error('加载进度失败:', error);
+      // 使用默认值
+      this.resetStats();
+    }
+  }
+
+  /**
+   * 清除进度
+   */
+  clearProgress(): void {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('totalScore');
+        localStorage.removeItem('level');
+        localStorage.removeItem('stars');
+        localStorage.removeItem('gameStats');
       }
-      if (stars) {
-        this.stats.stars = parseInt(stars, 10);
-      }
+      this.resetStats();
+    } catch (error) {
+      console.error('清除进度失败:', error);
     }
   }
 
@@ -269,5 +318,25 @@ export class GameStateManager {
    */
   getStateHistory(): GameState[] {
     return [...this.stateHistory];
+  }
+
+  /**
+   * 检查成就解锁
+   */
+  checkAchievements(): string[] {
+    const achievements: string[] = [];
+
+    // 示例成就检查
+    if (this.stats.totalScore >= 1000) {
+      achievements.push('score_1000');
+    }
+    if (this.stats.stars >= 30) {
+      achievements.push('stars_30');
+    }
+    if (this.stats.goalsCollected >= 50) {
+      achievements.push('goals_50');
+    }
+
+    return achievements;
   }
 }
